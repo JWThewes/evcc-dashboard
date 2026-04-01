@@ -44,6 +44,13 @@ impl SiteState {
     pub fn battery_soc_display(&self) -> String {
         self.battery_soc.map_or("--".to_string(), |v| format!("{:.0}", v))
     }
+    pub fn battery_gauge_class(&self) -> &str {
+        match self.battery_soc {
+            Some(v) if v < 20.0 => "low",
+            Some(v) if v < 50.0 => "medium",
+            _ => "high",
+        }
+    }
     pub fn grid_css_class(&self) -> &str {
         match self.grid_power {
             Some(v) if v < 0.0 => "export",

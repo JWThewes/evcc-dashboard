@@ -1,21 +1,30 @@
 <h2>Energy Flow</h2>
 <div class="energy-flow">
     <div class="energy-item">
+        <div class="energy-icon grid-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+        </div>
         <span class="energy-label">Grid</span>
         <span class="energy-value {{ site.grid_css_class() }}">
-            {{ site.grid_power_display() }} W
+            {{ site.grid_power_display() }}<span class="energy-unit">W</span>
         </span>
     </div>
     <div class="energy-item">
+        <div class="energy-icon pv-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+        </div>
         <span class="energy-label">PV</span>
         <span class="energy-value production">
-            {{ site.pv_power_display() }} W
+            {{ site.pv_power_display() }}<span class="energy-unit">W</span>
         </span>
     </div>
     <div class="energy-item">
+        <div class="energy-icon home-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
         <span class="energy-label">Home</span>
         <span class="energy-value consumption">
-            {{ site.home_power_display() }} W
+            {{ site.home_power_display() }}<span class="energy-unit">W</span>
         </span>
     </div>
 </div>
