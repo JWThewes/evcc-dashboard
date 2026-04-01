@@ -2,17 +2,17 @@
 const charts = {};
 
 const COLORS = {
-    grid_power: '#e74c3c',
-    pv_power: '#f39c12',
-    home_power: '#3498db',
-    battery_power: '#2ecc71',
-    battery_soc: '#9b59b6',
-    grid_import_wh: '#e74c3c',
-    grid_export_wh: '#e67e22',
-    pv_production_wh: '#f39c12',
-    home_consumption_wh: '#3498db',
-    self_sufficiency_pct: '#2ecc71',
-    charge_power: '#1abc9c',
+    grid_power: '#f87171',
+    pv_power: '#fbbf24',
+    home_power: '#60a5fa',
+    battery_power: '#34d399',
+    battery_soc: '#a78bfa',
+    grid_import_wh: '#f87171',
+    grid_export_wh: '#fb923c',
+    pv_production_wh: '#fbbf24',
+    home_consumption_wh: '#60a5fa',
+    self_sufficiency_pct: '#34d399',
+    charge_power: '#2dd4bf',
 };
 
 const LABELS = {
@@ -27,6 +27,18 @@ const LABELS = {
     home_consumption_wh: 'Home Consumption',
     self_sufficiency_pct: 'Self Sufficiency (%)',
     charge_power: 'Charge Power',
+};
+
+// Shared theme constants
+const THEME = {
+    bg: 'rgba(22, 27, 45, 0.85)',
+    border: 'rgba(255, 255, 255, 0.08)',
+    text: '#eaecf0',
+    textMuted: '#6b7280',
+    textSecondary: '#a1a7b4',
+    gridLine: 'rgba(255, 255, 255, 0.04)',
+    axisLine: 'rgba(255, 255, 255, 0.08)',
+    accentFill: 'rgba(59, 130, 246, 0.12)',
 };
 
 function rangeToSeconds(range) {
@@ -59,7 +71,12 @@ function fetchAndRender(chart, chartType, baseUrl, range) {
 function renderChart(chart, chartType, data) {
     if (!data.timestamps || data.timestamps.length === 0) {
         chart.setOption({
-            title: { text: 'No data available', left: 'center', top: 'center', textStyle: { color: '#999' } }
+            title: {
+                text: 'No data available',
+                left: 'center',
+                top: 'center',
+                textStyle: { color: THEME.textMuted, fontSize: 14, fontFamily: 'Inter, sans-serif' }
+            }
         });
         return;
     }
@@ -88,12 +105,17 @@ function renderLineChart(chart, chartType, timestamps, series) {
             name: LABELS[key] || key,
             type: 'line',
             data: values,
-            smooth: true,
+            smooth: 0.3,
             symbol: 'none',
             lineStyle: { width: 2 },
             itemStyle: { color: COLORS[key] || '#666' },
             yAxisIndex: isPercentage ? 1 : 0,
-            areaStyle: key === 'pv_power' ? { opacity: 0.15 } : undefined,
+            areaStyle: key === 'pv_power' ? {
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    { offset: 0, color: 'rgba(251, 191, 36, 0.2)' },
+                    { offset: 1, color: 'rgba(251, 191, 36, 0)' },
+                ])
+            } : undefined,
         });
     }
 
@@ -116,44 +138,49 @@ function renderLineChart(chart, chartType, timestamps, series) {
     chart.setOption({
         tooltip: {
             trigger: 'axis',
-            backgroundColor: '#1a1d27',
-            borderColor: '#3b3f54',
-            textStyle: { color: '#e4e4e7' },
+            backgroundColor: THEME.bg,
+            borderColor: THEME.border,
+            borderWidth: 1,
+            textStyle: { color: THEME.text, fontSize: 13, fontFamily: 'Inter, sans-serif' },
             formatter: function (params) {
-                let html = params[0].axisValueLabel + '<br/>';
+                let html = `<div style="margin-bottom:6px;color:${THEME.textSecondary};font-size:12px">${params[0].axisValueLabel}</div>`;
                 params.forEach(p => {
                     const val = p.value != null ? p.value.toFixed(0) : '--';
                     const unit = p.seriesName.includes('%') ? '%' : ' W';
-                    html += `${p.marker} ${p.seriesName}: <b>${val}${unit}</b><br/>`;
+                    html += `<div style="display:flex;justify-content:space-between;gap:16px;line-height:1.7">${p.marker} <span>${p.seriesName}</span> <b>${val}${unit}</b></div>`;
                 });
                 return html;
             }
         },
         legend: {
             bottom: 0,
-            textStyle: { color: '#9ca3af' },
+            textStyle: { color: THEME.textSecondary, fontSize: 12, fontFamily: 'Inter, sans-serif' },
+            itemGap: 16,
         },
         grid: { left: 60, right: hasSecondAxis ? 60 : 20, bottom: 110, top: 20 },
         xAxis: {
             type: 'category',
             data: timestamps,
             axisLabel: {
-                color: '#9ca3af',
+                color: THEME.textMuted,
+                fontSize: 11,
+                fontFamily: 'Inter, sans-serif',
                 formatter: function (val) {
                     const d = new Date(val);
                     return d.getHours().toString().padStart(2, '0') + ':' +
                            d.getMinutes().toString().padStart(2, '0');
                 }
             },
-            axisLine: { lineStyle: { color: '#3b3f54' } },
+            axisLine: { lineStyle: { color: THEME.axisLine } },
+            axisTick: { show: false },
             boundaryGap: false,
         },
         yAxis: yAxes.map(y => ({
             ...y,
-            axisLabel: { ...y.axisLabel, color: '#9ca3af' },
-            axisLine: { lineStyle: { color: '#3b3f54' } },
-            splitLine: { lineStyle: { color: '#2d3140' } },
-            nameTextStyle: { color: '#9ca3af' },
+            axisLabel: { ...y.axisLabel, color: THEME.textMuted, fontSize: 11, fontFamily: 'Inter, sans-serif' },
+            axisLine: { show: false },
+            splitLine: { lineStyle: { color: THEME.gridLine } },
+            nameTextStyle: { color: THEME.textSecondary, fontSize: 12, fontFamily: 'Inter, sans-serif' },
         })),
         series: seriesConfig,
         dataZoom: [
@@ -162,19 +189,19 @@ function renderLineChart(chart, chartType, timestamps, series) {
                 type: 'slider',
                 bottom: 28,
                 height: 20,
-                borderColor: '#3b3f54',
-                fillerColor: 'rgba(59,130,246,0.15)',
+                borderColor: THEME.border,
+                fillerColor: THEME.accentFill,
                 dataBackground: {
-                    lineStyle: { color: '#4b5563' },
-                    areaStyle: { color: 'rgba(75,85,99,0.3)' },
+                    lineStyle: { color: 'rgba(255,255,255,0.08)' },
+                    areaStyle: { color: 'rgba(255,255,255,0.03)' },
                 },
                 selectedDataBackground: {
-                    lineStyle: { color: '#6b7280' },
-                    areaStyle: { color: 'rgba(107,114,128,0.3)' },
+                    lineStyle: { color: 'rgba(255,255,255,0.12)' },
+                    areaStyle: { color: 'rgba(255,255,255,0.05)' },
                 },
-                handleStyle: { color: '#6b7280', borderColor: '#9ca3af' },
-                moveHandleStyle: { color: '#6b7280' },
-                textStyle: { color: '#9ca3af' },
+                handleStyle: { color: '#3b82f6', borderColor: 'rgba(59,130,246,0.4)' },
+                moveHandleStyle: { color: 'rgba(255,255,255,0.1)' },
+                textStyle: { color: THEME.textSecondary, fontSize: 11, fontFamily: 'Inter, sans-serif' },
             },
         ],
     }, true);
@@ -189,40 +216,50 @@ function renderBarChart(chart, timestamps, series) {
         seriesConfig.push({
             name: LABELS[key] || key,
             type: 'bar',
-            data: values.map(v => v != null ? (v / 1000).toFixed(2) : 0), // Wh -> kWh
-            itemStyle: { color: COLORS[key] || '#666' },
+            data: values.map(v => v != null ? (v / 1000).toFixed(2) : 0),
+            itemStyle: {
+                color: COLORS[key] || '#666',
+                borderRadius: [3, 3, 0, 0],
+            },
+            barMaxWidth: 24,
         });
     }
 
     chart.setOption({
         tooltip: {
             trigger: 'axis',
-            backgroundColor: '#1a1d27',
-            borderColor: '#3b3f54',
-            textStyle: { color: '#e4e4e7' },
+            backgroundColor: THEME.bg,
+            borderColor: THEME.border,
+            borderWidth: 1,
+            textStyle: { color: THEME.text, fontSize: 13, fontFamily: 'Inter, sans-serif' },
             formatter: function (params) {
-                let html = params[0].axisValueLabel + '<br/>';
+                let html = `<div style="margin-bottom:6px;color:${THEME.textSecondary};font-size:12px">${params[0].axisValueLabel}</div>`;
                 params.forEach(p => {
-                    html += `${p.marker} ${p.seriesName}: <b>${p.value} kWh</b><br/>`;
+                    html += `<div style="display:flex;justify-content:space-between;gap:16px;line-height:1.7">${p.marker} <span>${p.seriesName}</span> <b>${p.value} kWh</b></div>`;
                 });
                 return html;
             }
         },
-        legend: { bottom: 0, textStyle: { color: '#9ca3af' } },
+        legend: {
+            bottom: 0,
+            textStyle: { color: THEME.textSecondary, fontSize: 12, fontFamily: 'Inter, sans-serif' },
+            itemGap: 16,
+        },
         grid: { left: 60, right: 20, bottom: 30, top: 20 },
         xAxis: {
             type: 'category',
             data: categories,
-            axisLabel: { color: '#9ca3af' },
-            axisLine: { lineStyle: { color: '#3b3f54' } },
+            axisLabel: { color: THEME.textMuted, fontSize: 11, fontFamily: 'Inter, sans-serif' },
+            axisLine: { lineStyle: { color: THEME.axisLine } },
+            axisTick: { show: false },
         },
         yAxis: {
             type: 'value',
             name: 'Energy (kWh)',
-            nameTextStyle: { color: '#9ca3af' },
-            axisLabel: { color: '#9ca3af', formatter: '{value} kWh' },
-            axisLine: { lineStyle: { color: '#3b3f54' } },
-            splitLine: { lineStyle: { color: '#2d3140' } },
+            nameTextStyle: { color: THEME.textSecondary, fontSize: 12, fontFamily: 'Inter, sans-serif' },
+            axisLabel: { color: THEME.textMuted, formatter: '{value} kWh', fontSize: 11, fontFamily: 'Inter, sans-serif' },
+            axisLine: { show: false },
+            splitLine: { lineStyle: { color: THEME.gridLine } },
         },
         series: seriesConfig,
     }, true);

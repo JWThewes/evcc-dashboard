@@ -1,5 +1,9 @@
 <h2>Battery</h2>
 <div class="battery-info">
+    <div class="battery-gauge">
+        <div class="battery-gauge-fill {{ site.battery_gauge_class() }}"
+             style="width: {{ site.battery_soc_display() }}%"></div>
+    </div>
     <div class="battery-soc">
         <span class="battery-label">State of Charge</span>
         <span class="battery-value">{{ site.battery_soc_display() }}%</span>
