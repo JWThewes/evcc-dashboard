@@ -1,0 +1,43 @@
+<h2>Charging Points</h2>
+{% if loadpoints.is_empty() %}
+<p class="no-data">No active charging points</p>
+{% else %}
+<div class="loadpoints-grid">
+    {% for lp in loadpoints %}
+    <div class="loadpoint-card">
+        <div class="loadpoint-header">
+            <span class="loadpoint-id">{{ lp.title_display() }}</span>
+            {% if lp.has_vehicle() %}
+            <span class="vehicle-name">{{ lp.vehicle_name_display() }}</span>
+            {% endif %}
+        </div>
+        <div class="loadpoint-stats">
+            <div>
+                <span class="stat-label">Status</span>
+                <span class="stat-value">{% if lp.is_connected() %}Connected{% else %}Disconnected{% endif %}</span>
+            </div>
+            <div>
+                <span class="stat-label">Power</span>
+                <span class="stat-value">{{ lp.charge_power_display() }} W</span>
+            </div>
+            <div>
+                <span class="stat-label">Vehicle SoC</span>
+                <span class="stat-value">{{ lp.vehicle_soc_display() }}%</span>
+            </div>
+            <div>
+                <span class="stat-label">Range</span>
+                <span class="stat-value">{{ lp.vehicle_range_display() }} km</span>
+            </div>
+            <div>
+                <span class="stat-label">Total Charged</span>
+                <span class="stat-value">{{ lp.charged_energy_display() }}</span>
+            </div>
+            <div>
+                <span class="stat-label">Mode</span>
+                <span class="stat-value">{{ lp.mode_display() }}</span>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}

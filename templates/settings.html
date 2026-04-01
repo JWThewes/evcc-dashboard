@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - evcc dashboard{% endblock %}
+
+{% block content %}
+<div class="settings-page">
+    <h1>Mobile App Setup</h1>
+
+    {% if has_key %}
+    <p>Scan this QR code with the Casita Thewes app to connect.</p>
+    <div class="qr-container">
+        {{ qr_svg|safe }}
+    </div>
+    {% else %}
+    <div class="settings-warning">
+        <p>No API key configured. Add an <code>[api]</code> section with a <code>key</code> to your config.toml to enable mobile access.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

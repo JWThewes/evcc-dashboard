@@ -1,0 +1,21 @@
+<h2>Current Summary</h2>
+<div class="summary-grid">
+    <div class="summary-item">
+        <span class="summary-label">Grid</span>
+        <span class="summary-value">
+            <span class="{{ site.grid_direction_css() }}">{{ site.grid_direction() }}</span>
+        </span>
+    </div>
+    <div class="summary-item">
+        <span class="summary-label">Solar Production</span>
+        <span class="summary-value production">{{ site.pv_power_display() }} W</span>
+    </div>
+    <div class="summary-item">
+        <span class="summary-label">Home Consumption</span>
+        <span class="summary-value consumption">{{ site.home_power_display() }} W</span>
+    </div>
+    <div class="summary-item">
+        <span class="summary-label">Battery</span>
+        <span class="summary-value">{{ site.battery_soc_display() }}% / {{ site.battery_power_display() }} W</span>
+    </div>
+</div>

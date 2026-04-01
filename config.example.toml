@@ -1,0 +1,32 @@
+[server]
+host = "0.0.0.0"
+port = 3000
+# Set this when running behind a reverse proxy with a path prefix
+# e.g. base_path = "/evcc-dashboard"
+base_path = ""
+trust_proxy_headers = true
+
+[mqtt]
+host = "192.168.1.100"
+port = 1883
+username = ""
+password = ""
+topic_prefix = "evcc"
+client_id = "evcc-dashboard"
+
+[database]
+path = "./data/evcc-dashboard.db"
+
+[sampling]
+interval_seconds = 5
+
+[retention]
+# Keep raw 5-second resolution data for this many days
+raw_days = 7
+# Keep 1-minute aggregates for this many days
+minute_days = 90
+# Keep hourly aggregates for this many days
+hourly_days = 730
+
+[logging]
+level = "info"

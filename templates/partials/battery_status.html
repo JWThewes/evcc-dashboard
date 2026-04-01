@@ -1,0 +1,13 @@
+<h2>Battery</h2>
+<div class="battery-info">
+    <div class="battery-soc">
+        <span class="battery-label">State of Charge</span>
+        <span class="battery-value">{{ site.battery_soc_display() }}%</span>
+    </div>
+    <div class="battery-power-info">
+        <span class="battery-label">Power</span>
+        <span class="battery-value {{ site.battery_css_class() }}">
+            {{ site.battery_power_display() }} W {{ site.battery_status_text() }}
+        </span>
+    </div>
+</div>

@@ -1,0 +1,39 @@
+<h2>Today's Energy</h2>
+<div class="summary-grid">
+    <div class="summary-item">
+        <span class="summary-label">PV Production</span>
+        <span class="summary-value production">{{ totals.pv_display() }}</span>
+    </div>
+    <div class="summary-item">
+        <span class="summary-label">Home Consumption</span>
+        <span class="summary-value consumption">{{ totals.home_display() }}</span>
+    </div>
+    <div class="summary-item">
+        <span class="summary-label">Grid Import</span>
+        <span class="summary-value import">{{ totals.grid_import_display() }}</span>
+    </div>
+    <div class="summary-item">
+        <span class="summary-label">Grid Export</span>
+        <span class="summary-value export">{{ totals.grid_export_display() }}</span>
+    </div>
+    <div class="summary-item">
+        <span class="summary-label">Battery Charged</span>
+        <span class="summary-value">{{ totals.battery_charge_display() }}</span>
+    </div>
+    <div class="summary-item">
+        <span class="summary-label">Battery Discharged</span>
+        <span class="summary-value">{{ totals.battery_discharge_display() }}</span>
+    </div>
+    <div class="summary-item">
+        <span class="summary-label">Self Sufficiency</span>
+        <span class="summary-value production">{{ totals.self_sufficiency_display() }}</span>
+    </div>
+    {% match green_share %}
+        {% when Some with (val) %}
+    <div class="summary-item">
+        <span class="summary-label">Green Share</span>
+        <span class="summary-value production">{{ "{:.1}"|format(val * 100.0) }}%</span>
+    </div>
+        {% when None %}
+    {% endmatch %}
+</div>

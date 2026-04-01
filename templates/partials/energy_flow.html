@@ -1,0 +1,21 @@
+<h2>Energy Flow</h2>
+<div class="energy-flow">
+    <div class="energy-item">
+        <span class="energy-label">Grid</span>
+        <span class="energy-value {{ site.grid_css_class() }}">
+            {{ site.grid_power_display() }} W
+        </span>
+    </div>
+    <div class="energy-item">
+        <span class="energy-label">PV</span>
+        <span class="energy-value production">
+            {{ site.pv_power_display() }} W
+        </span>
+    </div>
+    <div class="energy-item">
+        <span class="energy-label">Home</span>
+        <span class="energy-value consumption">
+            {{ site.home_power_display() }} W
+        </span>
+    </div>
+</div>

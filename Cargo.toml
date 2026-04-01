@@ -1,0 +1,25 @@
+[package]
+name = "evcc-dashboard"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+axum = "0.8"
+askama = "0.15"
+tokio = { version = "1", features = ["full"] }
+rumqttc = "0.24"
+rusqlite = { version = "0.32", features = ["bundled"] }
+r2d2 = "0.8"
+r2d2_sqlite = "0.25"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.8"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+chrono = { version = "0.4", features = ["serde"] }
+clap = { version = "4", features = ["derive"] }
+tower-http = { version = "0.6", features = ["fs", "trace", "compression-gzip"] }
+anyhow = "1"
+qrcode = "0.14.1"
+futures-util = "0.3.32"
+tokio-stream = "0.1.18"

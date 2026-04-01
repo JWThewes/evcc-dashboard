@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}History - Casita Thewes{% endblock %}
+
+{% block content %}
+<h1>Energy History</h1>
+
+<div class="card">
+    <div class="chart-controls">
+        <label for="range-select">Time Range:</label>
+        <select id="range-select" onchange="updateChartRange(this.value)">
+            <option value="24h">Last 24 Hours</option>
+            <option value="7d" selected>Last 7 Days</option>
+            <option value="30d">Last 30 Days</option>
+            <option value="90d">Last 90 Days</option>
+        </select>
+    </div>
+</div>
+
+<div class="grid grid-1">
+    <div class="card">
+        <h2>Power Overview</h2>
+        <div class="chart-box"
+             data-chart-type="power"
+             data-chart-url="{{ base_path }}/api/chart/power"
+             data-range="7d"
+             style="width:100%;height:400px;">
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-2">
+    <div class="card">
+        <h2>Battery</h2>
+        <div class="chart-box"
+             data-chart-type="battery"
+             data-chart-url="{{ base_path }}/api/chart/battery"
+             data-range="7d"
+             style="width:100%;height:350px;">
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Daily Energy</h2>
+        <div class="chart-box"
+             data-chart-type="energy"
+             data-chart-url="{{ base_path }}/api/chart/energy"
+             data-range="30d"
+             style="width:100%;height:350px;">
+        </div>
+    </div>
+</div>
+{% endblock %}

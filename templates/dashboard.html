@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}evcc Dashboard{% endblock %}
+
+{% block content %}
+<h1>Energy Dashboard</h1>
+
+<div class="grid grid-2">
+    <div class="card"
+         hx-get="{{ base_path }}/partials/energy-flow"
+         hx-trigger="every 2s"
+         hx-swap="innerHTML">
+        {% include "partials/energy_flow.html" %}
+    </div>
+
+    <div class="card"
+         hx-get="{{ base_path }}/partials/battery"
+         hx-trigger="every 2s"
+         hx-swap="innerHTML">
+        {% include "partials/battery_status.html" %}
+    </div>
+</div>
+
+<div class="grid grid-1">
+    <div class="card"
+         hx-get="{{ base_path }}/partials/summary"
+         hx-trigger="every 5s"
+         hx-swap="innerHTML">
+        {% include "partials/summary_stats.html" %}
+    </div>
+</div>
+
+<div class="grid grid-1">
+    <div class="card"
+         hx-get="{{ base_path }}/partials/today-energy"
+         hx-trigger="every 30s"
+         hx-swap="innerHTML">
+        <h2>Today's Energy</h2>
+        <p class="no-data">Calculating...</p>
+    </div>
+</div>
+
+<div class="grid grid-1">
+    <div class="card"
+         hx-get="{{ base_path }}/partials/loadpoints"
+         hx-trigger="every 2s"
+         hx-swap="innerHTML">
+        {% include "partials/loadpoints.html" %}
+    </div>
+</div>
+
+<div class="grid grid-1">
+    <div class="card">
+        <h2>Today's Power</h2>
+        <div class="chart-box"
+             data-chart-type="power"
+             data-chart-url="{{ base_path }}/api/chart/power"
+             data-range="24h"
+             style="width:100%;height:400px;">
+        </div>
+    </div>
+</div>
+{% endblock %}
