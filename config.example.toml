@@ -30,3 +30,6 @@ hourly_days = 730
 
 [logging]
 level = "info"
+
+[auth]
+password = ""

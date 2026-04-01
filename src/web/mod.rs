@@ -23,10 +23,10 @@ pub fn build_router(state: AppState) -> Router {
         .route("/loadpoints/{id}", get(routes::mobile::loadpoint_detail))
         .layer(axum_mw::from_fn_with_state(
             state.clone(),
-            middleware::require_api_key,
+            middleware::require_bearer,
         ));
 
-    let api_routes = Router::new()
+    let protected = Router::new()
         .route("/", get(routes::dashboard::index))
         .route("/history", get(routes::dashboard::history))
         .route("/settings", get(routes::settings::index))
@@ -42,7 +42,14 @@ pub fn build_router(state: AppState) -> Router {
             "/api/chart/loadpoint/{id}",
             get(routes::charts::loadpoint_history),
         )
+        .layer(axum_mw::from_fn_with_state(
+            state.clone(),
+            middleware::require_login,
+        ));
+
+    let api_routes = protected
         .nest("/api/mobile", mobile_api)
+        .route("/login", get(routes::login::get).post(routes::login::post))
         .route("/health", get(routes::health::check))
         .nest_service("/static", ServeDir::new("static"));
 

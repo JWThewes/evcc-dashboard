@@ -15,7 +15,7 @@ pub struct SettingsTemplate {
 }
 
 pub async fn index(State(state): State<AppState>) -> Html<String> {
-    let key = &state.config.api.key;
+    let key = &state.config.auth.password;
     let has_key = !key.is_empty();
 
     let qr_svg = if has_key {

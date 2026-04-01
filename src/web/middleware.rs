@@ -2,10 +2,43 @@ use axum::{
     extract::Request,
     http::{StatusCode, Uri},
     middleware::Next,
-    response::Response,
+    response::{IntoResponse, Redirect, Response},
 };
+use hmac::{Hmac, Mac};
+use sha2::Sha256;
 
 use crate::web::state::AppState;
+
+const COOKIE_NAME: &str = "evcc_session";
+
+type HmacSha256 = Hmac<Sha256>;
+
+/// Create a signed session cookie value.
+pub fn create_auth_cookie(password: &str, base_path: &str) -> String {
+    let signature = sign_token(password);
+    let path = if base_path.is_empty() { "/" } else { base_path };
+    format!(
+        "{COOKIE_NAME}={signature}; Path={path}; HttpOnly; SameSite=Strict; Max-Age=31536000"
+    )
+}
+
+fn sign_token(password: &str) -> String {
+    let mut mac = HmacSha256::new_from_slice(password.as_bytes())
+        .expect("HMAC accepts any key length");
+    mac.update(b"evcc-dashboard-session");
+    hex::encode(mac.finalize().into_bytes())
+}
+
+fn verify_cookie(cookie_header: &str, password: &str) -> bool {
+    let expected = sign_token(password);
+    cookie_header
+        .split(';')
+        .map(|c| c.trim())
+        .any(|c| {
+            c.strip_prefix(&format!("{COOKIE_NAME}="))
+                .is_some_and(|val| val == expected)
+        })
+}
 
 pub async fn strip_base_path(
     axum::extract::State(state): axum::extract::State<AppState>,
@@ -26,13 +59,42 @@ pub async fn strip_base_path(
     next.run(req).await
 }
 
-pub async fn require_api_key(
+/// Middleware for browser routes: checks session cookie, redirects to /login if missing.
+pub async fn require_login(
+    axum::extract::State(state): axum::extract::State<AppState>,
+    req: Request,
+    next: Next,
+) -> Response {
+    let password = &state.config.auth.password;
+
+    // No password configured — allow access (open mode)
+    if password.is_empty() {
+        return next.run(req).await;
+    }
+
+    let authenticated = req
+        .headers()
+        .get("cookie")
+        .and_then(|v| v.to_str().ok())
+        .is_some_and(|cookies| verify_cookie(cookies, password));
+
+    if authenticated {
+        next.run(req).await
+    } else {
+        let base = &state.config.server.base_path;
+        let login_path = format!("{base}/login");
+        Redirect::to(&login_path).into_response()
+    }
+}
+
+/// Middleware for API routes: checks Bearer token.
+pub async fn require_bearer(
     axum::extract::State(state): axum::extract::State<AppState>,
     req: Request,
     next: Next,
 ) -> Result<Response, StatusCode> {
-    let expected = &state.config.api.key;
-    if expected.is_empty() {
+    let password = &state.config.auth.password;
+    if password.is_empty() {
         return Err(StatusCode::SERVICE_UNAVAILABLE);
     }
 
@@ -44,7 +106,7 @@ pub async fn require_api_key(
     match auth_header {
         Some(value) if value.starts_with("Bearer ") => {
             let token = &value[7..];
-            if token == expected {
+            if token == password {
                 Ok(next.run(req).await)
             } else {
                 Err(StatusCode::UNAUTHORIZED)

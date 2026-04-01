@@ -11,18 +11,18 @@ pub struct Config {
     #[serde(default)]
     pub logging: LoggingConfig,
     #[serde(default)]
-    pub api: ApiConfig,
+    pub auth: AuthConfig,
 }
 
 #[derive(Debug, Deserialize, Clone)]
-pub struct ApiConfig {
-    pub key: String,
+pub struct AuthConfig {
+    pub password: String,
 }
 
-impl Default for ApiConfig {
+impl Default for AuthConfig {
     fn default() -> Self {
         Self {
-            key: String::new(),
+            password: String::new(),
         }
     }
 }

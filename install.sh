@@ -18,7 +18,7 @@ SAMPLING_INTERVAL="${SAMPLING_INTERVAL:-5}"
 RAW_DAYS="${RAW_DAYS:-7}"
 MINUTE_DAYS="${MINUTE_DAYS:-90}"
 HOURLY_DAYS="${HOURLY_DAYS:-730}"
-API_KEY="${API_KEY:-cst-$(head -c 16 /dev/urandom | xxd -p)}"
+AUTH_PASSWORD="${AUTH_PASSWORD:-cst-$(head -c 16 /dev/urandom | xxd -p)}"
 
 # --- Non-interactive mode: set NON_INTERACTIVE=1 or pipe to bash ---
 if [ "${NON_INTERACTIVE:-0}" = "1" ] || [ ! -t 0 ]; then
@@ -75,8 +75,8 @@ ask "Keep raw data (days)" "$RAW_DAYS" RAW_DAYS
 ask "Keep 1-minute aggregates (days)" "$MINUTE_DAYS" MINUTE_DAYS
 ask "Keep hourly aggregates (days)" "$HOURLY_DAYS" HOURLY_DAYS
 
-if [ "$INTERACTIVE" = true ]; then echo ""; echo "--- API ---"; fi
-ask "API key for mobile endpoints (auto-generated)" "$API_KEY" API_KEY
+if [ "$INTERACTIVE" = true ]; then echo ""; echo "--- Authentication ---"; fi
+ask "Password for dashboard and API access (auto-generated)" "$AUTH_PASSWORD" AUTH_PASSWORD
 
 # --- Write config.toml ---
 cat > "$INSTALL_DIR/config.toml" <<EOF
@@ -108,8 +108,8 @@ hourly_days = $HOURLY_DAYS
 [logging]
 level = "$LOG_LEVEL"
 
-[api]
-key = "$API_KEY"
+[auth]
+password = "$AUTH_PASSWORD"
 EOF
 
 # --- Write docker-compose.yml ---
@@ -135,6 +135,9 @@ echo "Files created in $INSTALL_DIR:"
 echo "  config.toml        - configuration"
 echo "  docker-compose.yml - container setup"
 echo "  data/              - database directory"
+echo ""
+echo "Password: $AUTH_PASSWORD"
+echo "(saved in config.toml — use this to log into the dashboard and as Bearer token for the API)"
 echo ""
 echo "To start:"
 echo "  cd $INSTALL_DIR && docker compose up -d"
