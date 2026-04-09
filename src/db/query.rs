@@ -14,14 +14,14 @@ pub fn query_power_history(
     let sql = if group_by > 0 {
         format!(
             "SELECT (timestamp / {group_by}) * {group_by} as ts,
-                    AVG(grid_power), AVG(pv_power), AVG(home_power), AVG(battery_power)
+                    AVG(grid_power), AVG(pv_power), AVG(home_power), AVG(battery_power), AVG(battery_soc)
              FROM {table}
              WHERE timestamp >= ?1 AND timestamp <= ?2
              GROUP BY ts ORDER BY ts"
         )
     } else {
         format!(
-            "SELECT timestamp, grid_power, pv_power, home_power, battery_power
+            "SELECT timestamp, grid_power, pv_power, home_power, battery_power, battery_soc
              FROM {table}
              WHERE timestamp >= ?1 AND timestamp <= ?2
              ORDER BY timestamp"
@@ -34,6 +34,7 @@ pub fn query_power_history(
     let mut pv = Vec::new();
     let mut home = Vec::new();
     let mut battery = Vec::new();
+    let mut soc = Vec::new();
 
     let rows = stmt.query_map(params![from, to], |row| {
         Ok((
@@ -42,16 +43,18 @@ pub fn query_power_history(
             row.get::<_, Option<f64>>(2)?,
             row.get::<_, Option<f64>>(3)?,
             row.get::<_, Option<f64>>(4)?,
+            row.get::<_, Option<f64>>(5)?,
         ))
     })?;
 
     for row in rows {
-        let (ts, g, p, h, b) = row?;
+        let (ts, g, p, h, b, s) = row?;
         timestamps.push(ts);
         grid.push(g);
         pv.push(p);
         home.push(h);
         battery.push(b);
+        soc.push(s);
     }
 
     let mut series = HashMap::new();
@@ -59,6 +62,7 @@ pub fn query_power_history(
     series.insert("pv_power".to_string(), pv);
     series.insert("home_power".to_string(), home);
     series.insert("battery_power".to_string(), battery);
+    series.insert("battery_soc".to_string(), soc);
 
     Ok(ChartData { timestamps, series })
 }
