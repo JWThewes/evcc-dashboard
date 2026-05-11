@@ -295,11 +295,11 @@ pub fn query_daily_summaries(
     rows.collect::<Result<Vec<_>, _>>().map_err(Into::into)
 }
 
-pub fn query_today_pv_energy(conn: &Connection) -> anyhow::Result<Option<f64>> {
+pub fn query_today_pv_energy(conn: &Connection, interval_seconds: f64) -> anyhow::Result<Option<f64>> {
     let today = chrono::Utc::now().format("%Y-%m-%d").to_string();
     let result = conn.query_row(
-        "SELECT pv_production_wh FROM daily_summaries WHERE date = ?1",
-        params![today],
+        "SELECT SUM(CASE WHEN pv_power > 0 THEN pv_power * ?2 / 3600.0 ELSE 0 END) FROM energy_samples WHERE timestamp >= strftime('%s', ?1) AND timestamp < strftime('%s', ?1, '+1 day')",
+        params![today, interval_seconds],
         |row| row.get::<_, Option<f64>>(0),
     );
     match result {
