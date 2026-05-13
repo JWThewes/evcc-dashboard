@@ -31,9 +31,10 @@ pub async fn live(
 
             let pv_energy_today_wh = {
                 let pool = state.db_pool.clone();
+                let interval = state.config.sampling.interval_seconds as f64;
                 tokio::task::spawn_blocking(move || {
                     let conn = pool.get().ok()?;
-                    db::query::query_today_pv_energy(&conn).ok()?
+                    db::query::query_today_pv_energy(&conn, interval).ok()?
                 })
                 .await
                 .ok()
