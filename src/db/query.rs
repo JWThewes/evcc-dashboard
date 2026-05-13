@@ -313,8 +313,8 @@ fn resolve_table_and_grouping(resolution: &str) -> (&'static str, i64) {
     match resolution {
         "raw" => ("energy_samples", 0),
         "1m" => ("energy_samples", 60),
-        "5m" => ("energy_samples_1m", 300),
-        "1h" => ("energy_samples_1h", 0),
+        "5m" => ("energy_samples", 300),
+        "1h" => ("energy_samples_1m", 3600),
         _ => ("energy_samples", 60),
     }
 }
