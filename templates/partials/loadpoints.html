@@ -1,6 +1,11 @@
 <h2>Charging Points</h2>
 {% if loadpoints.is_empty() %}
-<p class="no-data">No active charging points</p>
+<div class="loadpoints-grid">
+    <div class="loadpoint-card">
+        <div class="skeleton skeleton-text" style="width:40%"></div>
+        <div class="skeleton skeleton-block" style="margin-top:0.75rem"></div>
+    </div>
+</div>
 {% else %}
 <div class="loadpoints-grid">
     {% for lp in loadpoints %}

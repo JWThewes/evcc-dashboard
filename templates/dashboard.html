@@ -6,45 +6,50 @@
 <h1><span class="live-dot"></span>Energy Dashboard</h1>
 
 <div class="grid grid-2">
-    <div class="card"
+    <div class="card" data-card="energy-flow"
          hx-get="{{ base_path }}/partials/energy-flow"
          hx-trigger="every 2s"
-         hx-swap="innerHTML">
+         hx-swap="innerHTML transition:true">
         {% include "partials/energy_flow.html" %}
     </div>
 
-    <div class="card"
+    <div class="card" data-card="battery"
          hx-get="{{ base_path }}/partials/battery"
          hx-trigger="every 2s"
-         hx-swap="innerHTML">
+         hx-swap="innerHTML transition:true">
         {% include "partials/battery_status.html" %}
     </div>
 </div>
 
 <div class="grid grid-1">
-    <div class="card"
+    <div class="card" data-card="summary"
          hx-get="{{ base_path }}/partials/summary"
          hx-trigger="every 5s"
-         hx-swap="innerHTML">
+         hx-swap="innerHTML transition:true">
         {% include "partials/summary_stats.html" %}
     </div>
 </div>
 
 <div class="grid grid-1">
-    <div class="card"
+    <div class="card" data-card="today-energy"
          hx-get="{{ base_path }}/partials/today-energy"
          hx-trigger="every 30s"
-         hx-swap="innerHTML">
+         hx-swap="innerHTML transition:true">
         <h2>Today's Energy</h2>
-        <p class="no-data">Calculating...</p>
+        <div class="summary-grid">
+            <div class="summary-item"><span class="skeleton skeleton-text"></span><span class="skeleton skeleton-value"></span></div>
+            <div class="summary-item"><span class="skeleton skeleton-text"></span><span class="skeleton skeleton-value"></span></div>
+            <div class="summary-item"><span class="skeleton skeleton-text"></span><span class="skeleton skeleton-value"></span></div>
+            <div class="summary-item"><span class="skeleton skeleton-text"></span><span class="skeleton skeleton-value"></span></div>
+        </div>
     </div>
 </div>
 
 <div class="grid grid-1">
-    <div class="card"
+    <div class="card" data-card="loadpoints"
          hx-get="{{ base_path }}/partials/loadpoints"
          hx-trigger="every 2s"
-         hx-swap="innerHTML">
+         hx-swap="innerHTML transition:true">
         {% include "partials/loadpoints.html" %}
     </div>
 </div>
@@ -69,4 +74,57 @@
         </div>
     </div>
 </div>
+
+<script>
+(function() {
+    function timeAgo(date) {
+        var seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+        if (seconds < 5) return 'just now';
+        if (seconds < 60) return seconds + 's ago';
+        var minutes = Math.floor(seconds / 60);
+        return minutes + 'm ago';
+    }
+
+    function updateTimestamps() {
+        document.querySelectorAll('.last-updated[data-updated-at]').forEach(function(el) {
+            var ts = parseInt(el.getAttribute('data-updated-at'), 10);
+            if (ts) el.textContent = timeAgo(new Date(ts));
+        });
+    }
+
+    document.body.addEventListener('htmx:afterSwap', function(evt) {
+        var card = evt.target.closest('.card[data-card]');
+        if (!card) return;
+        var header = card.querySelector('.card-header .last-updated');
+        if (!header) {
+            // Inject card-header with live-dot + last-updated on first swap
+            var h2 = card.querySelector('h2');
+            if (h2) {
+                var wrapper = document.createElement('div');
+                wrapper.className = 'card-header';
+                var dot = document.createElement('span');
+                dot.className = 'live-dot';
+                var tsEl = document.createElement('span');
+                tsEl.className = 'last-updated';
+                tsEl.setAttribute('data-updated-at', Date.now());
+                tsEl.textContent = 'just now';
+                h2.parentNode.insertBefore(wrapper, h2);
+                wrapper.appendChild(h2);
+                var right = document.createElement('span');
+                right.style.display = 'flex';
+                right.style.alignItems = 'center';
+                right.style.gap = '0.4rem';
+                right.appendChild(dot);
+                right.appendChild(tsEl);
+                wrapper.appendChild(right);
+            }
+        } else {
+            header.setAttribute('data-updated-at', Date.now());
+            header.textContent = 'just now';
+        }
+    });
+
+    setInterval(updateTimestamps, 5000);
+})();
+</script>
 {% endblock %}
