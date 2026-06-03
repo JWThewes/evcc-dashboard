@@ -1,7 +1,9 @@
 # Question and GeneralInfo Linking Guide
 
 ## Purpose
+
 This guide covers two critical linking patterns:
+
 1. **Question → Artifact**: Questions MUST be linked to ALL artifacts they influence (Requirements, UserStories, Tasks, GeneralInfo, CodeFiles)
 2. **GeneralInfo → Artifact**: GeneralInfo nodes MUST be linked to related Requirements/UserStories/Tasks
 
@@ -10,6 +12,7 @@ Proper linking enables efficient graph traversal, decision traceability, and com
 ## When to Create GeneralInfo Nodes
 
 Create GeneralInfo nodes for:
+
 - **Reverse Engineering Findings**: Business overview, architecture, code structure, API docs, component inventory, technology stack, dependencies
 - **Application Design**: Component definitions, method signatures, service layer design, component dependencies
 - **Architecture Decisions**: Design patterns, technology choices, architectural styles
@@ -22,6 +25,7 @@ Create GeneralInfo nodes for:
 **MANDATORY RULE**: Every Question that influences an artifact (Requirement, UserStory, Task, GeneralInfo, CodeFile) MUST be linked using the `INFLUENCES` edge label.
 
 ### Why Question Linking is Critical
+
 - **Decision Traceability**: Shows which questions shaped which artifacts
 - **Context Preservation**: Future agents can understand why decisions were made
 - **Audit Trail**: Complete history of clarifications and their impact
@@ -116,11 +120,14 @@ Then link Questions using the section above.
 ## Linking Rules by GeneralInfo Type
 
 ### Reverse Engineering Findings
+
 Link to:
+
 - **Requirements** that describe the existing system or changes to it
 - **Questions** that were asked during reverse engineering (use INFLUENCES edge)
 
 Example:
+
 ```javascript
 // Create GeneralInfo with Requirement links
 add_node(label: "GeneralInfo", id: "re-architecture", properties: {
@@ -142,12 +149,15 @@ add_edge(
 ```
 
 ### Application Design
+
 Link to:
+
 - **Requirements** that the design addresses
 - **UserStories** that the design supports
 - **Questions** that influenced design decisions (use INFLUENCES edge)
 
 Example:
+
 ```javascript
 // Create GeneralInfo with Requirement/UserStory links
 add_node(label: "GeneralInfo", id: "design-components", properties: {
@@ -171,12 +181,15 @@ add_edge(
 ```
 
 ### API Documentation
+
 Link to:
+
 - **Requirements** for the API functionality
 - **UserStories** that use the API
 - **Tasks** that implement the API endpoints
 
 Example:
+
 ```javascript
 add_node(label: "GeneralInfo", id: "api-auth-endpoints", properties: {
   type: "api-documentation",
@@ -191,11 +204,14 @@ add_node(label: "GeneralInfo", id: "api-auth-endpoints", properties: {
 ```
 
 ### Architecture Decisions
+
 Link to:
+
 - **Requirements** that drove the decision
 - **Questions** that were asked about the decision (use INFLUENCES edge)
 
 Example:
+
 ```javascript
 // Create GeneralInfo with Requirement links
 add_node(label: "GeneralInfo", id: "decision-database", properties: {
@@ -222,13 +238,13 @@ Before creating a GeneralInfo node, identify related artifacts:
 
 ```javascript
 // Load all requirements
-const requirements = await list_nodes({ label: "Requirement" });
+const requirements = await list_nodes({ label: 'Requirement' });
 
 // Load all user stories
-const userStories = await list_nodes({ label: "UserStory" });
+const userStories = await list_nodes({ label: 'UserStory' });
 
 // Load all questions
-const questions = await list_nodes({ label: "Question" });
+const questions = await list_nodes({ label: 'Question' });
 
 // Analyze which ones relate to your GeneralInfo content
 // Then include them in the edges array
@@ -237,6 +253,7 @@ const questions = await list_nodes({ label: "Question" });
 ## Validation Checklist
 
 Before creating any GeneralInfo node, verify:
+
 - [ ] Node has a descriptive `id` (e.g., "design-rest-api", not "general-1")
 - [ ] Node has a `type` property (e.g., "application-design", "reverse-engineering")
 - [ ] Node has a `title` property
@@ -250,6 +267,7 @@ Before creating any GeneralInfo node, verify:
 ## Common Mistakes to Avoid
 
 ❌ **Creating GeneralInfo without edges**
+
 ```javascript
 // BAD - No links!
 add_node(label: "GeneralInfo", id: "design-api", properties: {
@@ -260,6 +278,7 @@ add_node(label: "GeneralInfo", id: "design-api", properties: {
 ```
 
 ✅ **Creating GeneralInfo with edges**
+
 ```javascript
 // GOOD - Properly linked
 add_node(label: "GeneralInfo", id: "design-api", properties: {
@@ -272,56 +291,58 @@ add_node(label: "GeneralInfo", id: "design-api", properties: {
 ```
 
 ❌ **Using wrong edge label**
+
 ```javascript
 // BAD - Wrong edge label
-edges: [
-  { direction: "to", label: "Requirement", id: "req-api", edgeLabel: "BREAKS_INTO" }
-]
+edges: [{ direction: 'to', label: 'Requirement', id: 'req-api', edgeLabel: 'BREAKS_INTO' }];
 ```
 
 ✅ **Using correct edge label**
+
 ```javascript
 // GOOD - Correct edge label
-edges: [
-  { direction: "to", label: "Requirement", id: "req-api", edgeLabel: "RELATES_TO" }
-]
+edges: [{ direction: 'to', label: 'Requirement', id: 'req-api', edgeLabel: 'RELATES_TO' }];
 ```
 
 ❌ **Linking to non-existent artifacts**
+
 ```javascript
 // BAD - req-xyz doesn't exist
-edges: [
-  { direction: "to", label: "Requirement", id: "req-xyz", edgeLabel: "RELATES_TO" }
-]
+edges: [{ direction: 'to', label: 'Requirement', id: 'req-xyz', edgeLabel: 'RELATES_TO' }];
 ```
 
 ✅ **Linking to verified artifacts**
+
 ```javascript
 // GOOD - Verified req-authentication exists
-const requirements = await list_nodes({ label: "Requirement" });
+const requirements = await list_nodes({ label: 'Requirement' });
 // ... verify req-authentication is in the list ...
 edges: [
-  { direction: "to", label: "Requirement", id: "req-authentication", edgeLabel: "RELATES_TO" }
-]
+  { direction: 'to', label: 'Requirement', id: 'req-authentication', edgeLabel: 'RELATES_TO' },
+];
 ```
 
 ## Summary
 
 **Every Question MUST:**
+
 1. Be linked to ALL artifacts it influenced using `INFLUENCES` edge
 2. Use `add_edge` after creating the influenced artifact
 3. Link to Requirements, UserStories, Tasks, GeneralInfo, or CodeFiles as appropriate
 
 **Every GeneralInfo node MUST:**
+
 1. Have a descriptive ID and type
 2. Include the `edges` parameter with at least one `RELATES_TO` edge to Requirements/UserStories/Tasks
 3. After creation, have all Questions that influenced it linked via `INFLUENCES`
 
 **Edge Label Rules:**
+
 - Question → ANY Artifact: Use `INFLUENCES` (via `add_edge` after artifact creation)
 - GeneralInfo → Requirement/UserStory/Task: Use `RELATES_TO` (in `edges` parameter)
 
 **This ensures:**
+
 - Complete decision traceability from questions to all influenced artifacts
 - Agents can traverse the graph to understand why decisions were made
 - Design decisions are linked to both requirements AND the questions that shaped them

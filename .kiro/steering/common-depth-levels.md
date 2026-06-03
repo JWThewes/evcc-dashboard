@@ -9,11 +9,13 @@
 ## Stage Selection vs Detail Level
 
 ### Stage Selection (Binary)
+
 - **Workflow Planning** decides: EXECUTE or SKIP for each stage
 - **If EXECUTE**: Stage runs and creates ALL its defined graph nodes
 - **If SKIP**: Stage doesn't run at all
 
 ### Detail Level (Adaptive)
+
 - **Simple problems**: Concise node properties with essential detail
 - **Complex problems**: Comprehensive node properties with extensive detail
 - **Model decides**: Based on problem characteristics, not prescriptive rules
@@ -32,31 +34,37 @@ The model considers these factors when determining appropriate detail:
 ## Example: Requirements Analysis Artifacts
 
 **All scenarios create the same graph node types**:
+
 - Requirement nodes (via `add_node`)
 - Question nodes (automatically via `ask_question` calls)
 
 **Detail level varies by complexity**:
 
 ### Simple Scenario (Bug Fix)
+
 - **Requirement nodes**: 1-2 concise requirements with clear acceptance criteria
 - **Questions**: Minimal clarifying questions (if any)
 
 ### Complex Scenario (System Migration)
+
 - **Requirement nodes**: 10+ detailed requirements with comprehensive acceptance criteria, traceability, priority
 - **Questions**: Multiple rounds of `ask_question` calls, 10+ questions
 
 ## Example: Application Design Artifacts
 
 **All scenarios create the same graph node types**:
+
 - Requirement nodes with `category: "design"`
 
 **Detail level varies by complexity**:
 
 ### Simple Scenario (Single Component)
+
 - **Design nodes**: Basic component description, key methods
 - **Minimal detail**: Essential relationships only
 
 ### Complex Scenario (Multi-Component System)
+
 - **Design nodes**: Detailed component responsibilities, all methods with signatures, design patterns
 - **Comprehensive detail**: All relationships, data flows, integration points
 

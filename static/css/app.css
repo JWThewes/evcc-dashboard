@@ -564,6 +564,52 @@ h2 {
 }
 
 /* ============================================
+   RANGE PICKER
+   ============================================ */
+.chart-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.chart-header h2 {
+    margin-bottom: 0;
+}
+
+.range-picker {
+    display: flex;
+    gap: 0.25rem;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 9999px;
+    padding: 0.2rem;
+    border: 1px solid var(--glass-border);
+}
+
+.range-btn {
+    padding: 0.35rem 0.75rem;
+    border: none;
+    border-radius: 9999px;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.range-btn:hover {
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.range-btn.active {
+    background: var(--accent);
+    color: var(--text-bright);
+}
+
+/* ============================================
    SETTINGS PAGE
    ============================================ */
 .settings-page {

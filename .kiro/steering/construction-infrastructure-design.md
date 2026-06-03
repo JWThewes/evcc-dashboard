@@ -1,11 +1,13 @@
 # Infrastructure Design
 
 ## Prerequisites
+
 - Functional Design must be complete for the unit
 - NFR Design recommended
 - Execution plan must indicate Infrastructure Design should execute
 
 ## Overview
+
 Map logical software components to actual infrastructure choices for deployment environments.
 
 ## Steps to Execute
@@ -18,6 +20,7 @@ Map logical software components to actual infrastructure choices for deployment 
 ### Step 2: Ask Infrastructure Questions via `ask_question`
 
 Call `ask_question` with questions covering relevant areas:
+
 - **Deployment Environment** - cloud provider, environment setup
 - **Compute Infrastructure** - compute service choices
 - **Storage Infrastructure** - database, storage selection
@@ -51,6 +54,7 @@ update_node(label: "Sprint", id: env.sprintId, properties: {
 ### Step 6: Request Approval
 
 Call `ask_question` with:
+
 ```
 "Infrastructure Design Complete - [unit-name]
 

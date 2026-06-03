@@ -51,7 +51,16 @@
 
 <div class="grid grid-1">
     <div class="card">
-        <h2>Today's Power</h2>
+        <div class="chart-header">
+            <h2>Today's Power</h2>
+            <div class="range-picker" data-testid="range-picker">
+                <button class="range-btn" data-range="1h" data-testid="range-btn-1h">1h</button>
+                <button class="range-btn" data-range="6h" data-testid="range-btn-6h">6h</button>
+                <button class="range-btn active" data-range="24h" data-testid="range-btn-24h">24h</button>
+                <button class="range-btn" data-range="7d" data-testid="range-btn-7d">7d</button>
+                <button class="range-btn" data-range="30d" data-testid="range-btn-30d">30d</button>
+            </div>
+        </div>
         <div class="chart-box"
              data-chart-type="power"
              data-chart-url="{{ base_path }}/api/chart/power"

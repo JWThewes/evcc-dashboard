@@ -1,10 +1,12 @@
 # NFR Design
 
 ## Prerequisites
+
 - NFR Requirements must be complete for the unit
 - Execution plan must indicate NFR Design should execute
 
 ## Overview
+
 Incorporate NFR requirements into unit design using patterns and logical components.
 
 ## Steps to Execute
@@ -17,6 +19,7 @@ Incorporate NFR requirements into unit design using patterns and logical compone
 ### Step 2: Ask NFR Design Questions via `ask_question`
 
 Call `ask_question` with questions covering relevant areas:
+
 - **Resilience Patterns** - fault tolerance approach
 - **Scalability Patterns** - scaling mechanisms
 - **Performance Patterns** - optimization strategy
@@ -50,6 +53,7 @@ update_node(label: "Sprint", id: env.sprintId, properties: {
 ### Step 6: Request Approval
 
 Call `ask_question` with:
+
 ```
 "NFR Design Complete - [unit-name]
 
