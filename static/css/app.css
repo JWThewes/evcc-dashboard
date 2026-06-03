@@ -23,7 +23,7 @@
     /* Text */
     --text: #eaecf0;
     --text-secondary: #a1a7b4;
-    --text-muted: #6b7280;
+    --text-muted: #9ca3af;
     --text-bright: #ffffff;
 
     /* Accent gradient */
@@ -1000,6 +1000,25 @@ h2 {
         animation-duration: 0.01ms !important;
         transition-duration: 0.01ms !important;
     }
+}
+
+/* ============================================
+   FOCUS VISIBLE — Accessibility
+   ============================================ */
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* Remove default outline for non-keyboard focus */
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* High-contrast adjustments for WCAG 2.1 AA compliance */
+[data-theme='light'] {
+    /* Ensure muted text meets 4.5:1 on light backgrounds */
+    --text-muted: #4b5563;
 }
 
 /* ============================================

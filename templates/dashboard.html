@@ -7,6 +7,7 @@
 
 <div class="grid grid-2">
     <div class="card" data-card="energy-flow"
+         aria-live="polite" aria-atomic="true"
          hx-get="{{ base_path }}/partials/energy-flow"
          hx-trigger="every 2s"
          hx-swap="innerHTML transition:true">
@@ -14,6 +15,7 @@
     </div>
 
     <div class="card" data-card="battery"
+         aria-live="polite" aria-atomic="true"
          hx-get="{{ base_path }}/partials/battery"
          hx-trigger="every 2s"
          hx-swap="innerHTML transition:true">
@@ -23,6 +25,7 @@
 
 <div class="grid grid-1">
     <div class="card" data-card="summary"
+         aria-live="polite" aria-atomic="true"
          hx-get="{{ base_path }}/partials/summary"
          hx-trigger="every 5s"
          hx-swap="innerHTML transition:true">
@@ -32,6 +35,7 @@
 
 <div class="grid grid-1">
     <div class="card" data-card="today-energy"
+         aria-live="polite" aria-atomic="true"
          hx-get="{{ base_path }}/partials/today-energy"
          hx-trigger="every 30s"
          hx-swap="innerHTML transition:true">
@@ -47,6 +51,7 @@
 
 <div class="grid grid-1">
     <div class="card" data-card="loadpoints"
+         aria-live="polite" aria-atomic="true"
          hx-get="{{ base_path }}/partials/loadpoints"
          hx-trigger="every 2s"
          hx-swap="innerHTML transition:true">
@@ -58,12 +63,12 @@
     <div class="card">
         <div class="chart-header">
             <h2>Today's Power</h2>
-            <div class="range-picker" data-testid="range-picker">
-                <button class="range-btn" data-range="1h" data-testid="range-btn-1h">1h</button>
-                <button class="range-btn" data-range="6h" data-testid="range-btn-6h">6h</button>
-                <button class="range-btn active" data-range="24h" data-testid="range-btn-24h">24h</button>
-                <button class="range-btn" data-range="7d" data-testid="range-btn-7d">7d</button>
-                <button class="range-btn" data-range="30d" data-testid="range-btn-30d">30d</button>
+            <div class="range-picker" role="group" aria-label="Chart time range" data-testid="range-picker">
+                <button class="range-btn" data-range="1h" aria-label="Last 1 hour" data-testid="range-btn-1h">1h</button>
+                <button class="range-btn" data-range="6h" aria-label="Last 6 hours" data-testid="range-btn-6h">6h</button>
+                <button class="range-btn active" data-range="24h" aria-label="Last 24 hours" aria-pressed="true" data-testid="range-btn-24h">24h</button>
+                <button class="range-btn" data-range="7d" aria-label="Last 7 days" data-testid="range-btn-7d">7d</button>
+                <button class="range-btn" data-range="30d" aria-label="Last 30 days" data-testid="range-btn-30d">30d</button>
             </div>
         </div>
         <div class="chart-box"

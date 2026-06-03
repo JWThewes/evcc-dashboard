@@ -9,7 +9,7 @@
 {% else %}
 <div class="loadpoints-grid">
     {% for lp in loadpoints %}
-    <a href="{{ base_path }}/history" class="loadpoint-card loadpoint-card-link" data-testid="loadpoint-card">
+    <a href="{{ base_path }}/history" class="loadpoint-card loadpoint-card-link" aria-label="View history for {{ lp.title_display() }}" data-testid="loadpoint-card">
         <div class="loadpoint-header">
             <span class="loadpoint-id">{{ lp.title_display() }}</span>
             {% if lp.has_vehicle() %}
