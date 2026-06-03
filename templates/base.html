@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}evcc Dashboard{% endblock %}</title>
+    <script>
+        (function() {
+            var theme = localStorage.getItem('theme');
+            if (theme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
@@ -21,10 +29,33 @@
             <a href="{{ base_path }}/" class="nav-link">Dashboard</a>
             <a href="{{ base_path }}/history" class="nav-link">History</a>
             <a href="{{ base_path }}/settings" class="nav-link">Settings</a>
+            <button type="button" class="theme-toggle" data-testid="theme-toggle" aria-label="Toggle theme">
+                <span class="icon-sun">☀️</span>
+                <span class="icon-moon">🌙</span>
+            </button>
         </div>
     </nav>
     <main class="container">
         {% block content %}{% endblock %}
     </main>
+    <script>
+        (function() {
+            var btn = document.querySelector('.theme-toggle');
+            if (btn) {
+                btn.addEventListener('click', function() {
+                    var html = document.documentElement;
+                    var current = html.getAttribute('data-theme');
+                    var next = current === 'light' ? 'dark' : 'light';
+                    if (next === 'dark') {
+                        html.removeAttribute('data-theme');
+                        localStorage.removeItem('theme');
+                    } else {
+                        html.setAttribute('data-theme', next);
+                        localStorage.setItem('theme', next);
+                    }
+                });
+            }
+        })();
+    </script>
 </body>
 </html>

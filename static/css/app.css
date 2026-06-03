@@ -59,6 +59,110 @@
 }
 
 /* ============================================
+   LIGHT THEME
+   ============================================ */
+[data-theme="light"] {
+    /* Background layers */
+    --bg-base: #f5f7fa;
+    --bg-surface: rgba(255, 255, 255, 0.85);
+    --bg-card: rgba(255, 255, 255, 0.75);
+    --bg-card-hover: rgba(255, 255, 255, 0.9);
+    --bg-elevated: rgba(255, 255, 255, 0.95);
+
+    /* Glass properties */
+    --glass-blur: 16px;
+    --glass-border: rgba(0, 0, 0, 0.08);
+    --glass-border-hover: rgba(0, 0, 0, 0.14);
+    --glass-shine: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.5) 0%,
+        rgba(255, 255, 255, 0.2) 40%,
+        rgba(255, 255, 255, 0) 100%
+    );
+
+    /* Text */
+    --text: #1f2937;
+    --text-secondary: #4b5563;
+    --text-muted: #6b7280;
+    --text-bright: #111827;
+
+    /* Accent */
+    --accent: #2563eb;
+    --accent-end: #0891b2;
+    --accent-gradient: linear-gradient(135deg, var(--accent), var(--accent-end));
+    --accent-glow: rgba(37, 99, 235, 0.2);
+
+    /* Status colors */
+    --green: #059669;
+    --green-glow: rgba(5, 150, 105, 0.12);
+    --red: #dc2626;
+    --red-glow: rgba(220, 38, 38, 0.1);
+    --yellow: #d97706;
+    --yellow-glow: rgba(217, 119, 6, 0.1);
+    --blue: #2563eb;
+    --blue-glow: rgba(37, 99, 235, 0.1);
+    --purple: #7c3aed;
+
+    /* Shadows */
+    --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+    --shadow-elevated: 0 4px 24px rgba(0, 0, 0, 0.1), 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] body::before {
+    background:
+        radial-gradient(ellipse 80% 60% at 10% 20%, rgba(37, 99, 235, 0.05) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 85% 30%, rgba(8, 145, 178, 0.04) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 60% at 50% 90%, rgba(124, 58, 237, 0.03) 0%, transparent 55%),
+        var(--bg-base);
+}
+
+/* ============================================
+   THEME TOGGLE
+   ============================================ */
+.theme-toggle {
+    background: none;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.4rem 0.6rem;
+    font-size: 1.1rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.theme-toggle:hover {
+    color: var(--text-bright);
+    border-color: var(--glass-border-hover);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="light"] .theme-toggle:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.theme-toggle .icon-sun,
+.theme-toggle .icon-moon {
+    display: none;
+}
+
+/* Dark mode: show sun icon (to switch to light) */
+:root .theme-toggle .icon-sun {
+    display: inline;
+}
+
+/* Light mode: show moon icon (to switch to dark) */
+[data-theme="light"] .theme-toggle .icon-sun {
+    display: none;
+}
+[data-theme="light"] .theme-toggle .icon-moon {
+    display: inline;
+}
+
+/* ============================================
    RESET
    ============================================ */
 *, *::before, *::after {

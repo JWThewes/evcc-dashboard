@@ -3,6 +3,7 @@
 **Purpose**: Build all units and execute comprehensive testing strategy
 
 ## Prerequisites
+
 - Code Generation must be complete for all units
 - All CodeFile nodes must be registered in graph
 - Project is ready for build and testing
@@ -12,6 +13,7 @@
 ## Step 1: Analyze Testing Requirements
 
 Analyze the project to determine appropriate testing strategy:
+
 - **Unit tests**: Already generated per unit during code generation
 - **Integration tests**: Test interactions between units/services
 - **Performance tests**: Load, stress, and scalability testing
@@ -46,6 +48,7 @@ git commit -m "Add build and test instructions for <task-id>"
 ```
 
 Verify the commit:
+
 ```
 git log --oneline -3
 ```
@@ -66,6 +69,7 @@ update_node(label: "Sprint", id: env.sprintId, properties: {
 ```
 
 Create a Review node if needed:
+
 ```
 add_node(label: "Review", id: "review-build-test", properties: {
   status: "PENDING",
@@ -78,6 +82,7 @@ add_node(label: "Review", id: "review-build-test", properties: {
 ## Step 5: Request Approval
 
 Call `ask_question` with:
+
 ```
 "Build and Test Complete
 
