@@ -42,7 +42,7 @@ const THEME = {
 };
 
 function rangeToSeconds(range) {
-    const map = { '24h': 86400, '7d': 604800, '30d': 2592000, '90d': 7776000 };
+    const map = { '1h': 3600, '6h': 21600, '24h': 86400, '7d': 604800, '30d': 2592000, '90d': 7776000 };
     return map[range] || 604800;
 }
 
@@ -138,6 +138,7 @@ function renderLineChart(chart, chartType, timestamps, series) {
     chart.setOption({
         tooltip: {
             trigger: 'axis',
+            axisPointer: { type: 'cross', crossStyle: { color: THEME.textMuted } },
             backgroundColor: THEME.bg,
             borderColor: THEME.border,
             borderWidth: 1,
@@ -156,6 +157,7 @@ function renderLineChart(chart, chartType, timestamps, series) {
             bottom: 0,
             textStyle: { color: THEME.textSecondary, fontSize: 12, fontFamily: 'Inter, sans-serif' },
             itemGap: 16,
+            selected: {},
         },
         grid: { left: 60, right: hasSecondAxis ? 60 : 20, bottom: 110, top: 20 },
         xAxis: {
@@ -295,6 +297,24 @@ function startChartRefresh() {
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('[data-chart-type]').forEach(initChart);
     startChartRefresh();
+
+    // Range picker click handler
+    document.querySelectorAll('.range-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const range = btn.dataset.range;
+            btn.closest('.range-picker').querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const chartBox = btn.closest('.card').querySelector('[data-chart-type]');
+            if (chartBox) {
+                chartBox.dataset.range = range;
+                const chartType = chartBox.dataset.chartType;
+                const info = charts[chartType];
+                if (info) {
+                    fetchAndRender(info.instance, chartType, info.baseUrl, range);
+                }
+            }
+        });
+    });
 });
 
 // Handle window resize

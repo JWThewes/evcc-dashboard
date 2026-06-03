@@ -7,6 +7,7 @@
 ## Code Validation
 
 ### Pre-Generation Validation Checklist
+
 - [ ] Validate code syntax and structure
 - [ ] Check special character escaping
 - [ ] Verify imports and dependencies are correct
@@ -14,6 +15,7 @@
 - [ ] Ensure generated code compiles/parses correctly
 
 ### Code Quality Rules
+
 1. **Always validate before writing files**: Never write unvalidated code to the filesystem
 2. **Escape special characters**: Particularly in strings, templates, and configuration files
 3. **Verify syntax**: Validate language-specific syntax before writing
@@ -30,11 +32,12 @@
    - Spaces only (NO tabs)
 2. **TEST** alignment by verifying box corners align vertically
 
-**See `common/ascii-diagram-standards.md` for patterns and validation checklist.**
+**See `common-ascii-diagram-standards.md` for patterns and validation checklist.**
 
 ## Validation Failure Handling
 
 ### When Validation Fails
+
 1. **Log the error**: Record what failed validation
 2. **Fix the issue**: Correct the validation error
 3. **Retry**: Re-validate after fixing

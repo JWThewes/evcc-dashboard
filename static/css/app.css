@@ -23,7 +23,7 @@
     /* Text */
     --text: #eaecf0;
     --text-secondary: #a1a7b4;
-    --text-muted: #6b7280;
+    --text-muted: #9ca3af;
     --text-bright: #ffffff;
 
     /* Accent gradient */
@@ -564,6 +564,52 @@ h2 {
 }
 
 /* ============================================
+   RANGE PICKER
+   ============================================ */
+.chart-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.chart-header h2 {
+    margin-bottom: 0;
+}
+
+.range-picker {
+    display: flex;
+    gap: 0.25rem;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 9999px;
+    padding: 0.2rem;
+    border: 1px solid var(--glass-border);
+}
+
+.range-btn {
+    padding: 0.35rem 0.75rem;
+    border: none;
+    border-radius: 9999px;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.range-btn:hover {
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.range-btn.active {
+    background: var(--accent);
+    color: var(--text-bright);
+}
+
+/* ============================================
    SETTINGS PAGE
    ============================================ */
 .settings-page {
@@ -735,6 +781,16 @@ h2 {
     50% { opacity: 1; }
 }
 
+@keyframes livePulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.8); opacity: 0; }
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
 /* Staggered card entrance */
 .card {
     animation: fadeInUp 0.4s var(--ease-out) both;
@@ -750,28 +806,174 @@ h2 {
     animation: fadeInUp 0.5s var(--ease-out) both;
 }
 
-/* Live data pulse indicator */
+/* ============================================
+   HTMX SWAP TRANSITIONS
+   ============================================ */
+.htmx-swapping {
+    opacity: 0;
+    transition: opacity 0.2s var(--ease-out);
+}
+
+.htmx-settling {
+    opacity: 1;
+    transition: opacity 0.3s var(--ease-out);
+}
+
+/* ============================================
+   LIVE-DOT PULSE INDICATOR
+   ============================================ */
 .live-dot {
     display: inline-block;
-    width: 6px;
-    height: 6px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     background: var(--green);
     margin-right: 0.4rem;
     vertical-align: middle;
+    position: relative;
     animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.live-dot::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: var(--green);
+    animation: livePulse 2s ease-in-out infinite;
+}
+
+/* ============================================
+   LAST-UPDATED TIMESTAMP
+   ============================================ */
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.card-header h2 {
+    margin-bottom: 0;
+}
+
+.last-updated {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+/* ============================================
+   SKELETON LOADERS
+   ============================================ */
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.04) 25%,
+        rgba(255, 255, 255, 0.08) 50%,
+        rgba(255, 255, 255, 0.04) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
+    border-radius: var(--radius-sm);
+}
+
+.skeleton-text {
+    height: 1rem;
+    margin-bottom: 0.5rem;
+    width: 60%;
+}
+
+.skeleton-value {
+    height: 1.6rem;
+    width: 80px;
+}
+
+.skeleton-bar {
+    height: 8px;
+    width: 100%;
+}
+
+.skeleton-block {
+    height: 4rem;
+    width: 100%;
+}
+
+[data-theme='light'] .skeleton {
+    background: linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0.06) 25%,
+        rgba(0, 0, 0, 0.10) 50%,
+        rgba(0, 0, 0, 0.06) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
+}
+
+/* ============================================
+   BOTTOM TAB BAR
+   ============================================ */
+.bottom-tab-bar {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: var(--bg-surface);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border-top: 1px solid var(--glass-border);
+    padding: 0.5rem 0;
+}
+
+.bottom-tab-bar nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.tab-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 0.4rem 1rem;
+    min-height: 44px;
+    min-width: 44px;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    transition: color var(--transition-fast);
+}
+
+.tab-link:hover,
+.tab-link.active {
+    color: var(--accent);
+}
+
+.tab-icon {
+    font-size: 1.25rem;
+    line-height: 1;
 }
 
 /* ============================================
    RESPONSIVE
    ============================================ */
-@media (max-width: 768px) {
+@media (max-width: 600px) {
     .grid-2 {
         grid-template-columns: 1fr;
     }
 
     .container {
         padding: 1rem;
+        padding-bottom: 5rem; /* space for bottom tab bar */
     }
 
     h1 {
@@ -781,6 +983,12 @@ h2 {
     .card {
         padding: 1.25rem;
         border-radius: var(--radius-sm);
+    }
+
+    .card.summary-card {
+        position: sticky;
+        top: 60px;
+        z-index: 10;
     }
 
     .energy-flow {
@@ -809,9 +1017,59 @@ h2 {
         font-size: 1rem;
     }
 
-    .nav-link {
-        font-size: 0.8rem;
-        padding: 0.35rem 0.6rem;
+    .navbar-links {
+        display: none;
+    }
+
+    .bottom-tab-bar {
+        display: block;
+    }
+
+    /* Touch targets */
+    button,
+    a.nav-link,
+    a.tab-link,
+    select,
+    .range-btn,
+    .chart-controls select {
+        min-height: 44px;
+    }
+
+    .range-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+
+    /* History page touch spacing */
+    .chart-controls {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .chart-controls select {
+        padding: 0.6rem 2.2rem 0.6rem 1rem;
+        font-size: 1rem;
+    }
+
+    .history-filters {
+        padding: 1rem 1.25rem;
+    }
+
+    .history-filters label {
+        font-size: 1rem;
+    }
+
+    /* Settings page touch spacing */
+    .settings-page input,
+    .settings-page select,
+    .settings-page button {
+        min-height: 44px;
+        padding: 0.6rem 1rem;
+        font-size: 1rem;
+    }
+
+    .settings-page p {
+        margin-bottom: 1.25rem;
     }
 
     .login-card {
@@ -835,10 +1093,6 @@ h2 {
         justify-content: space-between;
         padding: 0.75rem;
     }
-
-    .navbar-links {
-        gap: 0.1rem;
-    }
 }
 
 /* ============================================
@@ -849,4 +1103,93 @@ h2 {
         animation-duration: 0.01ms !important;
         transition-duration: 0.01ms !important;
     }
+}
+
+/* ============================================
+   FOCUS VISIBLE — Accessibility
+   ============================================ */
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* Remove default outline for non-keyboard focus */
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* High-contrast adjustments for WCAG 2.1 AA compliance */
+[data-theme='light'] {
+    /* Ensure muted text meets 4.5:1 on light backgrounds */
+    --text-muted: #4b5563;
+}
+
+/* ============================================
+   EXPAND/COLLAPSE TOGGLE
+   ============================================ */
+.expand-toggle {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+    margin-left: 0.5rem;
+    border-radius: var(--radius-sm);
+    transition: transform var(--transition-fast), color var(--transition-fast);
+    vertical-align: middle;
+}
+
+.expand-toggle:hover {
+    color: var(--text);
+}
+
+.energy-flow-wrapper.expanded .expand-toggle {
+    transform: rotate(180deg);
+}
+
+.raw-values-table {
+    display: none;
+    width: 100%;
+    margin-top: 1rem;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.energy-flow-wrapper.expanded .raw-values-table {
+    display: table;
+}
+
+.raw-values-table th,
+.raw-values-table td {
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.raw-values-table th {
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.raw-values-table td {
+    font-variant-numeric: tabular-nums;
+}
+
+/* ============================================
+   CLICKABLE LOADPOINT CARDS
+   ============================================ */
+a.loadpoint-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+a.loadpoint-card-link:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-elevated);
 }

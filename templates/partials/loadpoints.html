@@ -1,10 +1,15 @@
 <h2>Charging Points</h2>
 {% if loadpoints.is_empty() %}
-<p class="no-data">No active charging points</p>
+<div class="loadpoints-grid">
+    <div class="loadpoint-card">
+        <div class="skeleton skeleton-text" style="width:40%"></div>
+        <div class="skeleton skeleton-block" style="margin-top:0.75rem"></div>
+    </div>
+</div>
 {% else %}
 <div class="loadpoints-grid">
     {% for lp in loadpoints %}
-    <div class="loadpoint-card">
+    <a href="{{ base_path }}/history" class="loadpoint-card loadpoint-card-link" aria-label="View history for {{ lp.title_display() }}" data-testid="loadpoint-card">
         <div class="loadpoint-header">
             <span class="loadpoint-id">{{ lp.title_display() }}</span>
             {% if lp.has_vehicle() %}
@@ -37,7 +42,7 @@
                 <span class="stat-value">{{ lp.mode_display() }}</span>
             </div>
         </div>
-    </div>
+    </a>
     {% endfor %}
 </div>
 {% endif %}

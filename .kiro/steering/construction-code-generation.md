@@ -1,13 +1,16 @@
 # Code Generation - Detailed Steps
 
 ## Overview
+
 This stage generates code for each unit of work through two integrated parts:
+
 - **Part 1 - Planning**: Create detailed code generation plan, get approval
 - **Part 2 - Generation**: Execute approved plan to generate code, tests, and register files in graph
 
 **Note**: For brownfield projects, "generate" means modify existing files when appropriate, not create duplicates.
 
 ## Prerequisites
+
 - Design stages must be complete for the unit
 - All unit design artifacts must be available in graph
 - Unit is ready for code generation
@@ -39,6 +42,7 @@ This stage generates code for each unit of work through two integrated parts:
 ## Step 3: Request Plan Approval
 
 Call `ask_question` with:
+
 ```
 "Code Generation Plan for [unit-name]:
 
@@ -61,6 +65,7 @@ Wait for explicit approval.
 ## Step 4: Execute Code Generation
 
 For each planned step:
+
 - **If file exists (brownfield)**: Modify it in-place (never create copies)
 - **If file doesn't exist**: Create new file
 - Write to correct locations:
@@ -93,6 +98,7 @@ git commit -m "Implement <task-id>: <short description of what was built>"
 ```
 
 Verify the commit landed:
+
 ```
 git log --oneline -3
 ```
@@ -114,6 +120,7 @@ update_node(label: "Sprint", id: env.sprintId, properties: {
 ## Step 8: Request Approval
 
 Call `ask_question` with:
+
 ```
 "Code Generation Complete - [unit-name]
 
@@ -132,28 +139,34 @@ Wait for explicit approval.
 ## Critical Rules
 
 ### Code Location Rules
+
 - **Application code**: Workspace root only (NEVER aidlc-docs/)
 - **Read workspace root** before generating code
 
 **Structure patterns by project type**:
+
 - **Brownfield**: Use existing structure
 - **Greenfield single unit**: `src/`, `tests/`, `config/` in workspace root
 - **Greenfield multi-unit (microservices)**: `{unit-name}/src/`, `{unit-name}/tests/`
 - **Greenfield multi-unit (monolith)**: `src/{unit-name}/`, `tests/{unit-name}/`
 
 ### Brownfield File Modification Rules
+
 - Check if file exists before generating
 - If exists: Modify in-place (never create copies)
 - If doesn't exist: Create new file
 
 ### Automation Friendly Code Rules
+
 When generating UI code, add `data-testid` attributes to interactive elements.
 
 ### Graph Registration Rules
+
 - **EVERY** generated file must be registered via `add_node(label: "CodeFile")` with `edges` parameter to link to its unit via IMPLEMENTED_BY in the same call
 - Update Task node status to "done" when unit code generation is complete
 
 ### Git Commit Rules (CRITICAL — prevents lost work)
+
 - **COMMIT after every meaningful change.** Use `git add -A && git commit -m "Implement <task-id>: <description>"`.
 - **NEVER leave uncommitted work.** The system can only push what is committed. Uncommitted changes are lost.
 - **Before finishing**: Always run `git status` to verify a clean working tree. If anything is uncommitted, commit it.

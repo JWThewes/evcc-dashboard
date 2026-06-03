@@ -8,23 +8,41 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="{{ base_path }}/static/css/app.css">
+    <meta name="base-path" content="{{ base_path }}">
     <script src="{{ base_path }}/static/js/htmx.min.js" defer></script>
     <script src="{{ base_path }}/static/js/echarts.min.js" defer></script>
     <script src="{{ base_path }}/static/js/charts.js" defer></script>
+    <script src="{{ base_path }}/static/js/shortcuts.js" defer></script>
 </head>
 <body>
-    <nav class="navbar">
+    <nav class="navbar" aria-label="Main navigation">
         <div class="navbar-brand">
-            <a href="{{ base_path }}/">evcc Dashboard</a>
+            <a href="{{ base_path }}/" aria-label="evcc Dashboard home">evcc Dashboard</a>
         </div>
         <div class="navbar-links">
-            <a href="{{ base_path }}/" class="nav-link">Dashboard</a>
-            <a href="{{ base_path }}/history" class="nav-link">History</a>
-            <a href="{{ base_path }}/settings" class="nav-link">Settings</a>
+            <a href="{{ base_path }}/" class="nav-link"{% if current_page is defined and current_page == "dashboard" %} aria-current="page"{% endif %}>Dashboard</a>
+            <a href="{{ base_path }}/history" class="nav-link"{% if current_page is defined and current_page == "history" %} aria-current="page"{% endif %}>History</a>
+            <a href="{{ base_path }}/settings" class="nav-link"{% if current_page is defined and current_page == "settings" %} aria-current="page"{% endif %}>Settings</a>
         </div>
     </nav>
     <main class="container">
         {% block content %}{% endblock %}
     </main>
+    <div class="bottom-tab-bar" data-testid="bottom-tab-bar">
+        <nav>
+            <a href="{{ base_path }}/" class="tab-link" data-testid="tab-dashboard">
+                <span class="tab-icon">⚡</span>
+                <span>Dashboard</span>
+            </a>
+            <a href="{{ base_path }}/history" class="tab-link" data-testid="tab-history">
+                <span class="tab-icon">📊</span>
+                <span>History</span>
+            </a>
+            <a href="{{ base_path }}/settings" class="tab-link" data-testid="tab-settings">
+                <span class="tab-icon">⚙️</span>
+                <span>Settings</span>
+            </a>
+        </nav>
+    </div>
 </body>
 </html>
