@@ -3,14 +3,17 @@
 **Purpose**: Technical reference for AI model and developers to understand complete workflow structure.
 
 ## The Three-Phase Lifecycle:
+
 - **INCEPTION PHASE**: Planning and architecture (Workspace Detection + conditional phases + Workflow Planning)
 - **CONSTRUCTION PHASE**: Design, implementation, build and test (per-unit design + Code Planning/Generation + Build & Test)
 - **OPERATIONS PHASE**: Placeholder for future deployment and monitoring workflows
 
 ## The Adaptive Workflow:
+
 - **Workspace Detection** (always, includes **Previous Context Loading** for multi-sprint projects) -> **Reverse Engineering** (brownfield only, with carried-forward context awareness) -> **Requirements Analysis** (always, adaptive depth) -> **Conditional Phases** (as needed) -> **Workflow Planning** (always) -> **Code Generation** (always, per-unit) -> **Build and Test** (always)
 
 ## How It Works:
+
 - **AI analyzes** your request, workspace, and complexity to determine which stages are needed
 - **Previous sprint context** is automatically loaded at the start of each new sprint to ensure knowledge continuity
 - **These stages always execute**: Workspace Detection (with Previous Context Loading), Requirements Analysis (adaptive depth), Workflow Planning, Code Generation (per-unit), Build and Test
@@ -18,6 +21,7 @@
 - **No fixed sequences**: Stages execute in the order that makes sense for your specific task
 
 ## Your Team's Role:
+
 - **Answer questions** in the platform UI when the agent asks via `ask_question` — the agent blocks until you respond
 - **Provide clear, specific answers** to help the agent make good decisions
 - **Work as a team** to review and approve each phase before proceeding
@@ -26,6 +30,7 @@
 - **All artifacts are stored in the Neptune graph database** — view them in the Sprint page UI
 
 ## Where Artifacts Live:
+
 - **Requirements, User Stories, Tasks, Code Files** -> Neptune graph database (viewed in Sprint UI)
 - **Questions and Answers** -> Automatically tracked as Question nodes in Neptune
 - **Application source code** -> Workspace filesystem (as always)
@@ -118,6 +123,7 @@ flowchart TD
 **Stage Descriptions:**
 
 **INCEPTION PHASE** - Planning and Architecture
+
 - Workspace Detection: Analyze workspace state and project type (ALWAYS)
 - Previous Context Loading: Load and carry forward knowledge from previous sprints (AUTO - executes when previous sprints exist)
 - Reverse Engineering: Analyze existing codebase, with awareness of carried-forward RE findings (CONDITIONAL - Brownfield only)
@@ -128,6 +134,7 @@ flowchart TD
 - Units Generation: Decompose into units of work (CONDITIONAL)
 
 **CONSTRUCTION PHASE** - Design, Implementation, Build and Test
+
 - Functional Design: Detailed business logic design per unit (CONDITIONAL, per-unit)
 - NFR Requirements: Determine NFRs and select tech stack (CONDITIONAL, per-unit)
 - NFR Design: Incorporate NFR patterns and logical components (CONDITIONAL, per-unit)
@@ -136,9 +143,11 @@ flowchart TD
 - Build and Test: Build all units and execute comprehensive testing (ALWAYS)
 
 **OPERATIONS PHASE** - Placeholder
+
 - Operations: Placeholder for future deployment and monitoring workflows (PLACEHOLDER)
 
 **Key Principles:**
+
 - Phases execute only when they add value
 - Each phase independently evaluated
 - **Cross-sprint knowledge is automatically carried forward** to new sprints

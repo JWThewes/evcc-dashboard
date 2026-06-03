@@ -735,6 +735,16 @@ h2 {
     50% { opacity: 1; }
 }
 
+@keyframes livePulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.8); opacity: 0; }
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
 /* Staggered card entrance */
 .card {
     animation: fadeInUp 0.4s var(--ease-out) both;
@@ -750,16 +760,111 @@ h2 {
     animation: fadeInUp 0.5s var(--ease-out) both;
 }
 
-/* Live data pulse indicator */
+/* ============================================
+   HTMX SWAP TRANSITIONS
+   ============================================ */
+.htmx-swapping {
+    opacity: 0;
+    transition: opacity 0.2s var(--ease-out);
+}
+
+.htmx-settling {
+    opacity: 1;
+    transition: opacity 0.3s var(--ease-out);
+}
+
+/* ============================================
+   LIVE-DOT PULSE INDICATOR
+   ============================================ */
 .live-dot {
     display: inline-block;
-    width: 6px;
-    height: 6px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     background: var(--green);
     margin-right: 0.4rem;
     vertical-align: middle;
+    position: relative;
     animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.live-dot::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: var(--green);
+    animation: livePulse 2s ease-in-out infinite;
+}
+
+/* ============================================
+   LAST-UPDATED TIMESTAMP
+   ============================================ */
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.card-header h2 {
+    margin-bottom: 0;
+}
+
+.last-updated {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+/* ============================================
+   SKELETON LOADERS
+   ============================================ */
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.04) 25%,
+        rgba(255, 255, 255, 0.08) 50%,
+        rgba(255, 255, 255, 0.04) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
+    border-radius: var(--radius-sm);
+}
+
+.skeleton-text {
+    height: 1rem;
+    margin-bottom: 0.5rem;
+    width: 60%;
+}
+
+.skeleton-value {
+    height: 1.6rem;
+    width: 80px;
+}
+
+.skeleton-bar {
+    height: 8px;
+    width: 100%;
+}
+
+.skeleton-block {
+    height: 4rem;
+    width: 100%;
+}
+
+[data-theme='light'] .skeleton {
+    background: linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0.06) 25%,
+        rgba(0, 0, 0, 0.10) 50%,
+        rgba(0, 0, 0, 0.06) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
 }
 
 /* ============================================

@@ -55,35 +55,37 @@ add_node(label: "GeneralInfo", id: "design-api", properties: {
 
 ## Edge Rules
 
-| From | To | Edge Label | Method |
-|------|-----|-----------|---------|
-| Question | Requirement | INFLUENCES | `add_edge` after creation |
-| Question | UserStory | INFLUENCES | `add_edge` after creation |
-| Question | Task | INFLUENCES | `add_edge` after creation |
-| Question | GeneralInfo | INFLUENCES | `add_edge` after creation |
-| Question | CodeFile | INFLUENCES | `add_edge` after creation |
-| GeneralInfo | Requirement | RELATES_TO | `edges` in `add_node` |
-| GeneralInfo | UserStory | RELATES_TO | `edges` in `add_node` |
-| GeneralInfo | Task | RELATES_TO | `edges` in `add_node` |
+| From        | To          | Edge Label | Method                    |
+| ----------- | ----------- | ---------- | ------------------------- |
+| Question    | Requirement | INFLUENCES | `add_edge` after creation |
+| Question    | UserStory   | INFLUENCES | `add_edge` after creation |
+| Question    | Task        | INFLUENCES | `add_edge` after creation |
+| Question    | GeneralInfo | INFLUENCES | `add_edge` after creation |
+| Question    | CodeFile    | INFLUENCES | `add_edge` after creation |
+| GeneralInfo | Requirement | RELATES_TO | `edges` in `add_node`     |
+| GeneralInfo | UserStory   | RELATES_TO | `edges` in `add_node`     |
+| GeneralInfo | Task        | RELATES_TO | `edges` in `add_node`     |
 
 ## GeneralInfo Types
 
-| Type | Use For | Link To (RELATES_TO) | Link From (INFLUENCES) |
-|------|---------|---------|---------|
-| `reverse-engineering` | Existing code analysis | Requirements | Questions |
-| `application-design` | Component design, architecture | Requirements, UserStories | Questions |
-| `api-documentation` | API specs, endpoints | Requirements, UserStories, Tasks | Questions |
-| `architecture-decision` | Design decisions, patterns | Requirements | Questions |
-| `technical-specification` | Data models, protocols | Requirements, UserStories | Questions |
+| Type                      | Use For                        | Link To (RELATES_TO)             | Link From (INFLUENCES) |
+| ------------------------- | ------------------------------ | -------------------------------- | ---------------------- |
+| `reverse-engineering`     | Existing code analysis         | Requirements                     | Questions              |
+| `application-design`      | Component design, architecture | Requirements, UserStories        | Questions              |
+| `api-documentation`       | API specs, endpoints           | Requirements, UserStories, Tasks | Questions              |
+| `architecture-decision`   | Design decisions, patterns     | Requirements                     | Questions              |
+| `technical-specification` | Data models, protocols         | Requirements, UserStories        | Questions              |
 
 ## Validation Checklist
 
 **For Questions:**
+
 - [ ] After creating Requirement/UserStory/Task/GeneralInfo/CodeFile, identify which Questions influenced it
 - [ ] Use `add_edge` to link each Question with `INFLUENCES` edge label
 - [ ] Verify Question IDs exist in graph
 
 **For GeneralInfo:**
+
 - [ ] Has descriptive `id`
 - [ ] Has `type` property
 - [ ] Has `title` property
