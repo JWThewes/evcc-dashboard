@@ -42,6 +42,7 @@ pub fn build_router(state: AppState) -> Router {
             "/api/chart/loadpoint/{id}",
             get(routes::charts::loadpoint_history),
         )
+        .route("/api/events", get(routes::events::sse_handler))
         .layer(axum_mw::from_fn_with_state(
             state.clone(),
             middleware::require_login,

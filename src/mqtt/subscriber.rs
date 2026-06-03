@@ -1,11 +1,12 @@
 use chrono::Utc;
 use rumqttc::{AsyncClient, Event, EventLoop, Incoming, QoS};
 use std::time::Duration;
-use tokio::sync::mpsc;
+use tokio::sync::{broadcast, mpsc};
 
 use crate::config::MqttConfig;
 use crate::model::{EnergySample, LoadpointSample, SharedState};
 use crate::mqtt::parser;
+use crate::web::state::SseEvent;
 
 pub struct SampleBatch {
     pub energy: EnergySample,
@@ -19,6 +20,7 @@ pub async fn run_mqtt_loop(
     current_state: SharedState,
     sample_tx: mpsc::Sender<SampleBatch>,
     sample_interval: Duration,
+    sse_tx: broadcast::Sender<SseEvent>,
 ) {
     let prefix = &mqtt_config.topic_prefix;
     let subscribe_topic = format!("{prefix}/#");
@@ -74,6 +76,24 @@ pub async fn run_mqtt_loop(
                             charged_energy: lp.charged_energy,
                         })
                         .collect();
+
+                    // Publish SSE events
+                    let _ = sse_tx.send(SseEvent {
+                        event_type: "energy-flow".to_string(),
+                        data: serde_json::json!({
+                            "grid_power": state.site.grid_power,
+                            "pv_power": state.site.pv_power,
+                            "home_power": state.site.home_power,
+                            "battery_power": state.site.battery_power,
+                        }),
+                    });
+                    let _ = sse_tx.send(SseEvent {
+                        event_type: "battery".to_string(),
+                        data: serde_json::json!({
+                            "battery_soc": state.site.battery_soc,
+                            "battery_power": state.site.battery_power,
+                        }),
+                    });
 
                     let batch = SampleBatch {
                         energy,

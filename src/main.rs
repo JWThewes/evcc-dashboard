@@ -52,13 +52,17 @@ async fn main() -> anyhow::Result<()> {
     // Channel for sending samples from MQTT to DB writer
     let (sample_tx, sample_rx) = tokio::sync::mpsc::channel(256);
 
+    // Broadcast channel for SSE events
+    let (sse_tx, _) = tokio::sync::broadcast::channel(64);
+
     // Spawn background tasks
     let mqtt_config = config.mqtt.clone();
     let mqtt_state = current_state.clone();
     let sample_interval = std::time::Duration::from_secs(config.sampling.interval_seconds);
+    let sse_tx_mqtt = sse_tx.clone();
     tokio::spawn(async move {
         mqtt::subscriber::run_mqtt_loop(
-            mqtt_client, eventloop, mqtt_config, mqtt_state, sample_tx, sample_interval,
+            mqtt_client, eventloop, mqtt_config, mqtt_state, sample_tx, sample_interval, sse_tx_mqtt,
         )
         .await;
     });
@@ -76,6 +80,7 @@ async fn main() -> anyhow::Result<()> {
         config: config.clone(),
         db_pool,
         current_state,
+        sse_tx,
     };
 
     let app = web::build_router(state);

@@ -25,22 +25,26 @@ These directives were telling the AI to avoid asking questions rather than encou
 ### Key Changes Made
 
 #### 1. Requirements Analysis Stage
+
 - Changed from "only if needed" to "ALWAYS ask clarifying questions unless exceptionally clear"
 - Added comprehensive evaluation areas (functional, non-functional, business context, technical context)
 - Emphasized proactive questioning approach
 
 #### 2. User Stories Stage
+
 - Removed "skip entire categories" directive
 - Added comprehensive question categories to evaluate
 - Enhanced answer analysis requirements
 - Strengthened follow-up question mandates
 
 #### 3. Functional Design Stage
+
 - Replaced "only if" conditions with comprehensive evaluation
 - Added more question categories (data flow, integration points, error handling)
 - Strengthened ambiguity detection and resolution requirements
 
 #### 4. NFR Requirements Stage
+
 - Expanded question categories beyond basic NFRs
 - Added reliability, maintainability, and usability considerations
 - Enhanced answer analysis for technical ambiguities
@@ -56,6 +60,7 @@ These directives were telling the AI to avoid asking questions rather than encou
 ## Implementation Guidelines
 
 ### For Question Generation
+
 - Evaluate ALL question categories, don't skip any
 - Ask questions wherever clarification would improve quality
 - Include comprehensive question categories in each stage
@@ -63,12 +68,14 @@ These directives were telling the AI to avoid asking questions rather than encou
 - Use `ask_question` for ALL questions — it's the only way to get human input
 
 ### For Answer Analysis
+
 - Look for vague responses: "depends", "maybe", "not sure", "mix of", "somewhere between"
 - Detect undefined terms and references to external concepts
 - Identify contradictory or incomplete answers
 - Call `ask_question` again for ANY ambiguities
 
 ### For Follow-up Questions
+
 - Call `ask_question` with targeted follow-up when ambiguities are detected
 - Ask specific questions to resolve each ambiguity
 - Don't proceed until ALL unclear responses are clarified
@@ -77,12 +84,14 @@ These directives were telling the AI to avoid asking questions rather than encou
 ## Quality Assurance
 
 ### Red Flags to Watch For
+
 - Stages completing without asking any questions on complex projects
 - Proceeding with vague or ambiguous user responses
 - Skipping entire question categories without justification
 - Making assumptions instead of asking for clarification
 
 ### Success Indicators
+
 - Appropriate number of clarifying questions for project complexity
 - Thorough analysis of user responses with follow-up when needed
 - Clear, unambiguous requirements before proceeding to implementation
