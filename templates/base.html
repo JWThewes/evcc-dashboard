@@ -26,5 +26,21 @@
     <main class="container">
         {% block content %}{% endblock %}
     </main>
+    <div class="bottom-tab-bar" data-testid="bottom-tab-bar">
+        <nav>
+            <a href="{{ base_path }}/" class="tab-link" data-testid="tab-dashboard">
+                <span class="tab-icon">⚡</span>
+                <span>Dashboard</span>
+            </a>
+            <a href="{{ base_path }}/history" class="tab-link" data-testid="tab-history">
+                <span class="tab-icon">📊</span>
+                <span>History</span>
+            </a>
+            <a href="{{ base_path }}/settings" class="tab-link" data-testid="tab-settings">
+                <span class="tab-icon">⚙️</span>
+                <span>Settings</span>
+            </a>
+        </nav>
+    </div>
 </body>
 </html>
