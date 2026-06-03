@@ -758,6 +758,119 @@ h2 {
 }
 
 /* ============================================
+   HTMX SWAP TRANSITIONS
+   ============================================ */
+.htmx-swapping {
+    opacity: 0;
+    transition: opacity 0.2s var(--ease-out);
+}
+
+.htmx-settling {
+    opacity: 1;
+    transition: opacity 0.3s var(--ease-out);
+}
+
+/* ============================================
+   SKELETON LOADERS
+   ============================================ */
+.skeleton-loader {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.04) 25%,
+        rgba(255, 255, 255, 0.08) 50%,
+        rgba(255, 255, 255, 0.04) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: var(--radius-sm);
+}
+
+.skeleton-line {
+    height: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 4px;
+}
+
+.skeleton-line.short {
+    width: 40%;
+}
+
+.skeleton-line.medium {
+    width: 65%;
+}
+
+.skeleton-line.long {
+    width: 85%;
+}
+
+.skeleton-value {
+    height: 1.6rem;
+    width: 5rem;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ============================================
+   LIVE-DOT & LAST-UPDATED
+   ============================================ */
+.live-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    margin-right: 0.5rem;
+    vertical-align: middle;
+    position: relative;
+}
+
+.live-dot::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    background: var(--green);
+    opacity: 0;
+    animation: livePulse 2s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+    0%, 100% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    50% {
+        opacity: 0.4;
+        transform: scale(1.4);
+    }
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.card-header h2 {
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+}
+
+.last-updated {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+/* ============================================
    ANIMATIONS
    ============================================ */
 @keyframes fadeInUp {
@@ -776,11 +889,6 @@ h2 {
     to { opacity: 1; }
 }
 
-@keyframes pulseGlow {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; }
-}
-
 /* Staggered card entrance */
 .card {
     animation: fadeInUp 0.4s var(--ease-out) both;
@@ -794,18 +902,6 @@ h2 {
 /* Login entrance */
 .login-card {
     animation: fadeInUp 0.5s var(--ease-out) both;
-}
-
-/* Live data pulse indicator */
-.live-dot {
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--green);
-    margin-right: 0.4rem;
-    vertical-align: middle;
-    animation: pulseGlow 2s ease-in-out infinite;
 }
 
 /* ============================================

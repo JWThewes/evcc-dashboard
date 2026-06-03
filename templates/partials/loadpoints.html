@@ -1,6 +1,19 @@
-<h2>Charging Points</h2>
+<div class="card-header">
+    <h2><span class="live-dot"></span>Charging Points</h2>
+    <span class="last-updated" data-testid="last-updated-loadpoints"></span>
+</div>
 {% if loadpoints.is_empty() %}
-<p class="no-data">No active charging points</p>
+<div class="loadpoints-grid">
+    <div class="loadpoint-card">
+        <div class="loadpoint-header">
+            <span class="skeleton-loader skeleton-line short"></span>
+        </div>
+        <div class="loadpoint-stats">
+            <div><span class="skeleton-loader skeleton-line medium"></span></div>
+            <div><span class="skeleton-loader skeleton-line medium"></span></div>
+        </div>
+    </div>
+</div>
 {% else %}
 <div class="loadpoints-grid">
     {% for lp in loadpoints %}

@@ -6,45 +6,53 @@
 <h1><span class="live-dot"></span>Energy Dashboard</h1>
 
 <div class="grid grid-2">
-    <div class="card"
+    <div class="card" data-card-id="energy-flow"
          hx-get="{{ base_path }}/partials/energy-flow"
          hx-trigger="every 2s"
-         hx-swap="innerHTML">
+         hx-swap="innerHTML transition:true">
         {% include "partials/energy_flow.html" %}
     </div>
 
-    <div class="card"
+    <div class="card" data-card-id="battery"
          hx-get="{{ base_path }}/partials/battery"
          hx-trigger="every 2s"
-         hx-swap="innerHTML">
+         hx-swap="innerHTML transition:true">
         {% include "partials/battery_status.html" %}
     </div>
 </div>
 
 <div class="grid grid-1">
-    <div class="card"
+    <div class="card" data-card-id="summary"
          hx-get="{{ base_path }}/partials/summary"
          hx-trigger="every 5s"
-         hx-swap="innerHTML">
+         hx-swap="innerHTML transition:true">
         {% include "partials/summary_stats.html" %}
     </div>
 </div>
 
 <div class="grid grid-1">
-    <div class="card"
+    <div class="card" data-card-id="today-energy"
          hx-get="{{ base_path }}/partials/today-energy"
          hx-trigger="every 30s"
-         hx-swap="innerHTML">
-        <h2>Today's Energy</h2>
-        <p class="no-data">Calculating...</p>
+         hx-swap="innerHTML transition:true">
+        <div class="card-header">
+            <h2><span class="live-dot"></span>Today's Energy</h2>
+            <span class="last-updated" data-testid="last-updated-today-energy"></span>
+        </div>
+        <div class="summary-grid">
+            <div class="summary-item"><span class="skeleton-loader skeleton-line medium"></span><span class="skeleton-loader skeleton-value"></span></div>
+            <div class="summary-item"><span class="skeleton-loader skeleton-line medium"></span><span class="skeleton-loader skeleton-value"></span></div>
+            <div class="summary-item"><span class="skeleton-loader skeleton-line medium"></span><span class="skeleton-loader skeleton-value"></span></div>
+            <div class="summary-item"><span class="skeleton-loader skeleton-line medium"></span><span class="skeleton-loader skeleton-value"></span></div>
+        </div>
     </div>
 </div>
 
 <div class="grid grid-1">
-    <div class="card"
+    <div class="card" data-card-id="loadpoints"
          hx-get="{{ base_path }}/partials/loadpoints"
          hx-trigger="every 2s"
-         hx-swap="innerHTML">
+         hx-swap="innerHTML transition:true">
         {% include "partials/loadpoints.html" %}
     </div>
 </div>
@@ -69,4 +77,38 @@
         </div>
     </div>
 </div>
+
+<script>
+(function() {
+    function timeAgo(date) {
+        var seconds = Math.floor((new Date() - date) / 1000);
+        if (seconds < 5) return 'just now';
+        if (seconds < 60) return seconds + 's ago';
+        var minutes = Math.floor(seconds / 60);
+        return minutes + 'm ago';
+    }
+
+    function updateTimestamp(cardEl) {
+        var cardId = cardEl.getAttribute('data-card-id');
+        if (!cardId) return;
+        var badge = cardEl.querySelector('.last-updated');
+        if (!badge) return;
+        badge.textContent = 'just now';
+        badge.setAttribute('data-updated-at', Date.now());
+    }
+
+    document.body.addEventListener('htmx:afterSwap', function(evt) {
+        var card = evt.target.closest('[data-card-id]');
+        if (card) updateTimestamp(card);
+    });
+
+    // Refresh relative timestamps every 10s
+    setInterval(function() {
+        document.querySelectorAll('.last-updated[data-updated-at]').forEach(function(el) {
+            var ts = parseInt(el.getAttribute('data-updated-at'), 10);
+            if (ts) el.textContent = timeAgo(new Date(ts));
+        });
+    }, 10000);
+})();
+</script>
 {% endblock %}
