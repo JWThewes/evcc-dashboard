@@ -3,20 +3,18 @@
 {% block title %}evcc Dashboard{% endblock %}
 
 {% block content %}
+<div id="sse-reconnect-banner" class="sse-reconnect-banner" role="status" aria-live="polite">
+    Connection lost. Reconnecting&hellip;
+</div>
+
 <h1><span class="live-dot"></span>Energy Dashboard</h1>
 
 <div class="grid grid-2">
-    <div class="card"
-         hx-get="{{ base_path }}/partials/energy-flow"
-         hx-trigger="every 2s"
-         hx-swap="innerHTML">
+    <div class="card" id="sse-energy-flow">
         {% include "partials/energy_flow.html" %}
     </div>
 
-    <div class="card"
-         hx-get="{{ base_path }}/partials/battery"
-         hx-trigger="every 2s"
-         hx-swap="innerHTML">
+    <div class="card" id="sse-battery">
         {% include "partials/battery_status.html" %}
     </div>
 </div>
