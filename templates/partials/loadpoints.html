@@ -4,7 +4,7 @@
 {% else %}
 <div class="loadpoints-grid">
     {% for lp in loadpoints %}
-    <div class="loadpoint-card">
+    <a href="{{ base_path }}/history" class="loadpoint-card loadpoint-card-link" data-testid="loadpoint-card">
         <div class="loadpoint-header">
             <span class="loadpoint-id">{{ lp.title_display() }}</span>
             {% if lp.has_vehicle() %}
@@ -37,7 +37,7 @@
                 <span class="stat-value">{{ lp.mode_display() }}</span>
             </div>
         </div>
-    </div>
+    </a>
     {% endfor %}
 </div>
 {% endif %}

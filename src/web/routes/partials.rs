@@ -23,6 +23,7 @@ pub async fn energy_flow(State(state): State<AppState>) -> Html<String> {
 #[derive(Template)]
 #[template(path = "partials/loadpoints.html")]
 pub struct LoadpointsTemplate {
+    pub base_path: String,
     pub loadpoints: Vec<LoadpointState>,
 }
 
@@ -30,7 +31,10 @@ pub async fn loadpoints(State(state): State<AppState>) -> Html<String> {
     let current = state.current_state.read().await;
     let mut loadpoints: Vec<LoadpointState> = current.loadpoints.values().cloned().collect();
     loadpoints.sort_by_key(|lp| lp.id);
-    let tmpl = LoadpointsTemplate { loadpoints };
+    let tmpl = LoadpointsTemplate {
+        base_path: state.config.server.base_path.clone(),
+        loadpoints,
+    };
     Html(tmpl.render().unwrap_or_else(|e| format!("Template error: {e}")))
 }
 
