@@ -850,3 +850,73 @@ h2 {
         transition-duration: 0.01ms !important;
     }
 }
+
+/* ============================================
+   EXPAND/COLLAPSE TOGGLE
+   ============================================ */
+.expand-toggle {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+    margin-left: 0.5rem;
+    border-radius: var(--radius-sm);
+    transition: transform var(--transition-fast), color var(--transition-fast);
+    vertical-align: middle;
+}
+
+.expand-toggle:hover {
+    color: var(--text);
+}
+
+.energy-flow-wrapper.expanded .expand-toggle {
+    transform: rotate(180deg);
+}
+
+.raw-values-table {
+    display: none;
+    width: 100%;
+    margin-top: 1rem;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.energy-flow-wrapper.expanded .raw-values-table {
+    display: table;
+}
+
+.raw-values-table th,
+.raw-values-table td {
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.raw-values-table th {
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.raw-values-table td {
+    font-variant-numeric: tabular-nums;
+}
+
+/* ============================================
+   CLICKABLE LOADPOINT CARDS
+   ============================================ */
+a.loadpoint-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+a.loadpoint-card-link:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-elevated);
+}

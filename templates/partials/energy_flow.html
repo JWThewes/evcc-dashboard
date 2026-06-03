@@ -1,4 +1,5 @@
-<h2>Energy Flow</h2>
+<h2>Energy Flow <button class="expand-toggle" data-testid="energy-flow-toggle" onclick="this.closest('.energy-flow-wrapper').classList.toggle('expanded')" aria-label="Toggle raw values">&#x25BC;</button></h2>
+<div class="energy-flow-wrapper">
 <div class="energy-flow">
     <div class="energy-item">
         <div class="energy-icon grid-icon">
@@ -27,4 +28,13 @@
             {{ site.home_power_display() }}<span class="energy-unit">W</span>
         </span>
     </div>
+</div>
+<table class="raw-values-table" data-testid="energy-raw-values">
+    <thead><tr><th>Source</th><th>Power (W)</th></tr></thead>
+    <tbody>
+        <tr><td>Grid</td><td class="{{ site.grid_css_class() }}">{{ site.grid_power_display() }}</td></tr>
+        <tr><td>PV</td><td class="production">{{ site.pv_power_display() }}</td></tr>
+        <tr><td>Home</td><td class="consumption">{{ site.home_power_display() }}</td></tr>
+    </tbody>
+</table>
 </div>

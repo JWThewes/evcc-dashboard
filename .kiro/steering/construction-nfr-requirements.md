@@ -1,10 +1,12 @@
 # NFR Requirements
 
 ## Prerequisites
+
 - Functional Design must be complete for the unit
 - Execution plan must indicate NFR Requirements should execute
 
 ## Overview
+
 Determine non-functional requirements for the unit and make tech stack choices.
 
 ## Steps to Execute
@@ -21,6 +23,7 @@ Determine non-functional requirements for the unit and make tech stack choices.
 **CRITICAL**: Default to asking questions when there is ANY ambiguity.
 
 Call `ask_question` with batched questions covering relevant areas:
+
 - **Scalability** - expected load, growth patterns, capacity planning
 - **Performance** - response times, throughput, latency
 - **Availability** - uptime expectations, disaster recovery, failover
@@ -57,6 +60,7 @@ update_node(label: "Sprint", id: env.sprintId, properties: {
 ### Step 6: Request Approval
 
 Call `ask_question` with:
+
 ```
 "NFR Requirements Complete - [unit-name]
 
