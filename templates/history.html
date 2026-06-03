@@ -5,10 +5,10 @@
 {% block content %}
 <h1>Energy History</h1>
 
-<div class="card">
+<div class="card history-filters">
     <div class="chart-controls">
         <label for="range-select">Time Range:</label>
-        <select id="range-select" onchange="updateChartRange(this.value)">
+        <select id="range-select" data-testid="range-select" onchange="updateChartRange(this.value)">
             <option value="24h">Last 24 Hours</option>
             <option value="7d" selected>Last 7 Days</option>
             <option value="30d">Last 30 Days</option>
