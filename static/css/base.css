@@ -1,0 +1,65 @@
+/* ============================================
+   EVCC DASHBOARD — BASE STYLES
+   Document-level defaults using design tokens
+   ============================================ */
+
+/* === Reset === */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* === Document Defaults === */
+html body {
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-primary);
+    background: var(--color-bg-page);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* === Headings === */
+html h1 {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-snug);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-md);
+}
+
+html h2 {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-normal);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-sm);
+}
+
+html h3 {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-normal);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-xs);
+}
+
+/* === Links === */
+a {
+    color: var(--color-text-primary);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--color-pv);
+}
+
+/* === Media === */
+img, svg {
+    max-width: 100%;
+    display: block;
+}
