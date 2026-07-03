@@ -11,6 +11,7 @@ use crate::web::state::AppState;
 #[template(path = "settings.html")]
 pub struct SettingsTemplate {
     pub base_path: String,
+    pub current_page: &'static str,
     pub qr_svg: String,
     pub has_key: bool,
 }
@@ -41,6 +42,7 @@ pub async fn index(State(state): State<AppState>, headers: HeaderMap) -> Html<St
 
     let tmpl = SettingsTemplate {
         base_path: state.config.server.base_path.clone(),
+        current_page: "settings",
         qr_svg,
         has_key,
     };

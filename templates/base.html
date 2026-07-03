@@ -9,23 +9,66 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="{{ base_path }}/static/css/tokens.css">
     <link rel="stylesheet" href="{{ base_path }}/static/css/base.css">
+    <link rel="stylesheet" href="{{ base_path }}/static/css/layout.css">
     <link rel="stylesheet" href="{{ base_path }}/static/css/app.css">
     <script src="{{ base_path }}/static/js/htmx.min.js" defer></script>
     <script src="{{ base_path }}/static/js/echarts.min.js" defer></script>
     <script src="{{ base_path }}/static/js/charts.js" defer></script>
+    <script src="{{ base_path }}/static/js/nav.js" defer></script>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="navbar-brand">
-            <a href="{{ base_path }}/">evcc Dashboard</a>
+    <header class="site-header" role="banner">
+        <div class="site-header__inner">
+            <button class="site-header__hamburger"
+                    type="button"
+                    aria-expanded="false"
+                    aria-controls="nav-menu"
+                    aria-label="Open navigation menu"
+                    data-testid="nav-hamburger-button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+            <a href="{{ base_path }}/" class="site-header__brand" data-testid="nav-brand-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"/>
+                    <line x1="12" y1="1" x2="12" y2="3"/>
+                    <line x1="12" y1="21" x2="12" y2="23"/>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                    <line x1="1" y1="12" x2="3" y2="12"/>
+                    <line x1="21" y1="12" x2="23" y2="12"/>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                </svg>
+                <span>evcc</span>
+            </a>
+            <nav class="site-header__nav" aria-label="Main navigation">
+                <a href="{{ base_path }}/" class="site-nav-link{% if current_page == "dashboard" %} site-nav-link--active{% endif %}"{% if current_page == "dashboard" %} aria-current="page"{% endif %} data-testid="nav-link-dashboard">Dashboard</a>
+                <a href="{{ base_path }}/history" class="site-nav-link{% if current_page == "history" %} site-nav-link--active{% endif %}"{% if current_page == "history" %} aria-current="page"{% endif %} data-testid="nav-link-history">History</a>
+                <a href="{{ base_path }}/sessions" class="site-nav-link{% if current_page == "sessions" %} site-nav-link--active{% endif %}"{% if current_page == "sessions" %} aria-current="page"{% endif %} data-testid="nav-link-sessions">Sessions</a>
+                <a href="{{ base_path }}/compare" class="site-nav-link{% if current_page == "compare" %} site-nav-link--active{% endif %}"{% if current_page == "compare" %} aria-current="page"{% endif %} data-testid="nav-link-compare">Compare</a>
+                <a href="{{ base_path }}/settings" class="site-nav-link{% if current_page == "settings" %} site-nav-link--active{% endif %}"{% if current_page == "settings" %} aria-current="page"{% endif %} data-testid="nav-link-settings">Settings</a>
+            </nav>
         </div>
-        <div class="navbar-links">
-            <a href="{{ base_path }}/" class="nav-link">Dashboard</a>
-            <a href="{{ base_path }}/history" class="nav-link">History</a>
-            <a href="{{ base_path }}/settings" class="nav-link">Settings</a>
-        </div>
-    </nav>
-    <main class="container">
+    </header>
+
+    <div id="nav-menu" class="mobile-nav" role="dialog" aria-label="Navigation menu" aria-hidden="true">
+        <div class="mobile-nav__backdrop"></div>
+        <nav class="mobile-nav__panel" aria-label="Mobile navigation">
+            <a href="{{ base_path }}/" class="mobile-nav__link{% if current_page == "dashboard" %} mobile-nav__link--active{% endif %}" data-testid="mobile-nav-link-dashboard">Dashboard</a>
+            <a href="{{ base_path }}/history" class="mobile-nav__link{% if current_page == "history" %} mobile-nav__link--active{% endif %}" data-testid="mobile-nav-link-history">History</a>
+            <a href="{{ base_path }}/sessions" class="mobile-nav__link{% if current_page == "sessions" %} mobile-nav__link--active{% endif %}" data-testid="mobile-nav-link-sessions">Sessions</a>
+            <a href="{{ base_path }}/compare" class="mobile-nav__link{% if current_page == "compare" %} mobile-nav__link--active{% endif %}" data-testid="mobile-nav-link-compare">Compare</a>
+            <a href="{{ base_path }}/settings" class="mobile-nav__link{% if current_page == "settings" %} mobile-nav__link--active{% endif %}" data-testid="mobile-nav-link-settings">Settings</a>
+        </nav>
+    </div>
+
+    <main class="page-content" role="main">
         {% block content %}{% endblock %}
     </main>
 </body>
