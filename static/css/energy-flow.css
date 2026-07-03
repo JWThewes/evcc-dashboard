@@ -1,0 +1,128 @@
+/* ============================================
+   EVCC DASHBOARD — ENERGY FLOW ANIMATION
+   Animated SVG energy flow diagram styles
+   ============================================ */
+
+/* === Container === */
+.energy-flow {
+    width: 100%;
+}
+
+/* === Responsive Layout Toggle === */
+.energy-flow__svg-horizontal {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 600 / 350;
+}
+
+.energy-flow__svg-vertical {
+    display: none;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 320 / 500;
+}
+
+@media (max-width: 639px) {
+    .energy-flow__svg-horizontal {
+        display: none;
+    }
+    .energy-flow__svg-vertical {
+        display: block;
+    }
+}
+
+/* === Node Styling === */
+.energy-flow__node-circle {
+    fill: var(--color-bg-card);
+    stroke-width: 2.5;
+}
+
+.energy-flow__node-label {
+    font-family: var(--font-family);
+    font-size: 11px;
+    fill: var(--color-text-secondary);
+    text-anchor: middle;
+}
+
+.energy-flow__node-value {
+    font-family: var(--font-family);
+    font-size: 14px;
+    font-weight: 600;
+    fill: var(--color-text-primary);
+    text-anchor: middle;
+}
+
+.energy-flow__node-sub {
+    font-family: var(--font-family);
+    font-size: 11px;
+    fill: var(--color-text-muted);
+    text-anchor: middle;
+}
+
+/* === Node Icon Colors === */
+.energy-flow__node-icon--pv { color: var(--color-pv); }
+.energy-flow__node-icon--home { color: var(--color-home); }
+.energy-flow__node-icon--grid-import { color: var(--color-grid-import); }
+.energy-flow__node-icon--grid-export { color: var(--color-grid-export); }
+.energy-flow__node-icon--battery { color: var(--color-battery); }
+.energy-flow__node-icon--ev { color: var(--color-ev); }
+
+/* === Node Circle Stroke Colors === */
+.node-color-pv { stroke: var(--color-pv); }
+.node-color-home { stroke: var(--color-home); }
+.node-color-grid-import { stroke: var(--color-grid-import); }
+.node-color-grid-export { stroke: var(--color-grid-export); }
+.node-color-battery { stroke: var(--color-battery); }
+.node-color-ev { stroke: var(--color-ev); }
+
+/* === Flow Path Animation === */
+@keyframes flow-forward {
+    from { stroke-dashoffset: 20; }
+    to { stroke-dashoffset: 0; }
+}
+
+.flow-path-active {
+    stroke-width: 3;
+    stroke-dasharray: 8 12;
+    animation: flow-forward linear infinite;
+    fill: none;
+    stroke-linecap: round;
+}
+
+.flow-path-idle {
+    stroke: var(--color-border);
+    stroke-width: 1.5;
+    stroke-dasharray: 4 8;
+    fill: none;
+    stroke-linecap: round;
+}
+
+/* === Speed Tiers === */
+.flow-speed-low { animation-duration: var(--flow-speed-low); }
+.flow-speed-medium { animation-duration: var(--flow-speed-medium); }
+.flow-speed-high { animation-duration: var(--flow-speed-high); }
+.flow-speed-max { animation-duration: var(--flow-speed-max); }
+
+/* === Energy Source Path Colors === */
+.flow-color-pv { stroke: var(--color-pv); }
+.flow-color-grid-import { stroke: var(--color-grid-import); }
+.flow-color-grid-export { stroke: var(--color-grid-export); }
+.flow-color-battery { stroke: var(--color-battery); }
+.flow-color-ev { stroke: var(--color-ev); }
+
+/* === Reduced Motion === */
+@media (prefers-reduced-motion: reduce) {
+    .flow-path-active {
+        animation: none;
+        stroke-dasharray: none;
+        stroke-dashoffset: 0;
+    }
+    .flow-arrow-marker {
+        display: block;
+    }
+}
+
+.flow-arrow-marker {
+    display: none;
+}

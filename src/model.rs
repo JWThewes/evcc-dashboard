@@ -89,6 +89,81 @@ impl SiteState {
             _ => "",
         }
     }
+
+    // --- Energy flow diagram helpers ---
+
+    pub(crate) fn format_kw(watts: f64) -> String {
+        let abs = watts.abs();
+        if abs >= 1000.0 {
+            format!("{:.1} kW", abs / 1000.0)
+        } else {
+            format!("{:.0} W", abs)
+        }
+    }
+
+    pub fn pv_power_kw(&self) -> String {
+        self.pv_power.map_or("—".to_string(), |v| Self::format_kw(v))
+    }
+
+    pub fn grid_power_kw(&self) -> String {
+        self.grid_power.map_or("—".to_string(), |v| Self::format_kw(v.abs()))
+    }
+
+    pub fn home_power_kw(&self) -> String {
+        self.home_power.map_or("—".to_string(), |v| Self::format_kw(v))
+    }
+
+    pub fn battery_power_kw(&self) -> String {
+        self.battery_power.map_or("—".to_string(), |v| Self::format_kw(v.abs()))
+    }
+
+    pub fn pv_flow_active(&self) -> bool {
+        self.pv_power.map_or(false, |v| v > 0.0)
+    }
+
+    pub fn grid_importing(&self) -> bool {
+        self.grid_power.map_or(false, |v| v > 0.0)
+    }
+
+    pub fn grid_exporting(&self) -> bool {
+        self.grid_power.map_or(false, |v| v < 0.0)
+    }
+
+    pub fn battery_discharging_flow(&self) -> bool {
+        self.battery_power.map_or(false, |v| v > 0.0)
+    }
+
+    pub fn battery_charging_flow(&self) -> bool {
+        self.battery_power.map_or(false, |v| v < 0.0)
+    }
+
+    pub fn grid_direction_label(&self) -> &str {
+        match self.grid_power {
+            Some(v) if v > 0.0 => "Import",
+            Some(v) if v < 0.0 => "Export",
+            Some(_) => "Idle",
+            None => "",
+        }
+    }
+
+    pub fn battery_direction_label(&self) -> &str {
+        match self.battery_power {
+            Some(v) if v < 0.0 => "Charging",
+            Some(v) if v > 0.0 => "Discharging",
+            Some(_) => "Idle",
+            None => "",
+        }
+    }
+
+    pub fn flow_speed_class(watts: Option<f64>) -> &'static str {
+        match watts {
+            Some(v) if v.abs() > 5000.0 => "flow-speed-max",
+            Some(v) if v.abs() > 2000.0 => "flow-speed-high",
+            Some(v) if v.abs() > 500.0 => "flow-speed-medium",
+            Some(v) if v.abs() > 0.0 => "flow-speed-low",
+            _ => "",
+        }
+    }
 }
 
 #[derive(Debug, Clone, Default, Serialize)]
