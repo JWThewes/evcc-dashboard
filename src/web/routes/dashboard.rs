@@ -9,6 +9,7 @@ use crate::web::state::AppState;
 #[template(path = "dashboard.html")]
 pub struct DashboardTemplate {
     pub base_path: String,
+    pub current_page: &'static str,
     pub site: SiteState,
     pub loadpoints: Vec<LoadpointState>,
 }
@@ -20,6 +21,7 @@ pub async fn index(State(state): State<AppState>) -> Html<String> {
 
     let tmpl = DashboardTemplate {
         base_path: state.config.server.base_path.clone(),
+        current_page: "dashboard",
         site: current.site.clone(),
         loadpoints,
     };
@@ -30,11 +32,13 @@ pub async fn index(State(state): State<AppState>) -> Html<String> {
 #[template(path = "history.html")]
 pub struct HistoryTemplate {
     pub base_path: String,
+    pub current_page: &'static str,
 }
 
 pub async fn history(State(state): State<AppState>) -> Html<String> {
     let tmpl = HistoryTemplate {
         base_path: state.config.server.base_path.clone(),
+        current_page: "history",
     };
     Html(tmpl.render().unwrap_or_else(|e| format!("Template error: {e}")))
 }

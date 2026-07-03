@@ -1,0 +1,285 @@
+/* ============================================
+   EVCC DASHBOARD — LAYOUT & NAVIGATION
+   Responsive grid + sticky header + mobile menu
+   ============================================ */
+
+/* === Page Container === */
+.page-content {
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+    padding: var(--space-md);
+}
+
+@media (min-width: 640px) {
+    .page-content {
+        padding: var(--space-lg);
+    }
+}
+
+@media (min-width: 1025px) {
+    .page-content {
+        padding: var(--space-xl);
+    }
+}
+
+/* === Card Grid === */
+.card-grid {
+    display: grid;
+    gap: var(--space-lg);
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+    .card-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1025px) {
+    .card-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.card-grid__full {
+    grid-column: 1 / -1;
+}
+
+/* === Site Header (Navbar) === */
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: var(--navbar-height-mobile);
+    background: var(--color-bg-card);
+    box-shadow: var(--shadow-navbar);
+}
+
+@media (min-width: 640px) {
+    .site-header {
+        height: var(--navbar-height);
+    }
+}
+
+.site-header__inner {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+    padding: 0 var(--space-md);
+}
+
+@media (min-width: 640px) {
+    .site-header__inner {
+        padding: 0 var(--space-lg);
+    }
+}
+
+@media (min-width: 1025px) {
+    .site-header__inner {
+        padding: 0 var(--space-xl);
+    }
+}
+
+/* === Brand === */
+.site-header__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    text-decoration: none;
+    color: var(--color-text-primary);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+}
+
+.site-header__brand svg {
+    width: 24px;
+    height: 24px;
+    color: var(--color-pv);
+}
+
+/* === Hamburger Button (Phone only) === */
+.site-header__hamburger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--touch-target-min);
+    height: var(--touch-target-min);
+    margin-right: var(--space-sm);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    color: var(--color-text-primary);
+    transition: background var(--duration-fast) var(--easing-default);
+}
+
+.site-header__hamburger:hover {
+    background: var(--color-bg-hover);
+}
+
+.site-header__hamburger:focus-visible {
+    outline: 2px solid var(--color-pv);
+    outline-offset: 2px;
+}
+
+.site-header__hamburger svg {
+    width: 24px;
+    height: 24px;
+}
+
+@media (min-width: 640px) {
+    .site-header__hamburger {
+        display: none;
+    }
+}
+
+/* === Desktop/Tablet Navigation Links === */
+.site-header__nav {
+    display: none;
+    align-items: center;
+    gap: var(--space-xs);
+    margin-left: auto;
+}
+
+@media (min-width: 640px) {
+    .site-header__nav {
+        display: flex;
+    }
+}
+
+.site-nav-link {
+    display: flex;
+    align-items: center;
+    height: var(--navbar-height);
+    padding: 0 var(--space-md);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    border-bottom: 2px solid transparent;
+    transition: color var(--duration-fast) var(--easing-default),
+                border-color var(--duration-fast) var(--easing-default);
+}
+
+.site-nav-link:hover {
+    color: var(--color-text-primary);
+}
+
+.site-nav-link--active {
+    color: var(--color-text-primary);
+    border-bottom-color: var(--color-pv);
+}
+
+.site-nav-link:focus-visible {
+    outline: 2px solid var(--color-pv);
+    outline-offset: -2px;
+}
+
+/* === Mobile Navigation Overlay === */
+.mobile-nav {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.mobile-nav--open {
+    visibility: visible;
+    pointer-events: auto;
+}
+
+/* Backdrop */
+.mobile-nav__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity var(--duration-normal) var(--easing-default);
+}
+
+.mobile-nav--open .mobile-nav__backdrop {
+    opacity: 1;
+}
+
+/* Panel */
+.mobile-nav__panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    background: var(--color-bg-card);
+    box-shadow: var(--shadow-card-hover);
+    transform: translateX(-100%);
+    transition: transform var(--duration-normal) var(--easing-default);
+    padding: var(--space-2xl) 0 var(--space-lg) 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.mobile-nav--open .mobile-nav__panel {
+    transform: translateX(0);
+}
+
+/* Mobile nav links */
+.mobile-nav__link {
+    display: flex;
+    align-items: center;
+    min-height: var(--touch-target-min);
+    padding: var(--space-sm) var(--space-lg);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    border-left: 3px solid transparent;
+    transition: color var(--duration-fast) var(--easing-default),
+                background var(--duration-fast) var(--easing-default),
+                border-color var(--duration-fast) var(--easing-default);
+}
+
+.mobile-nav__link:hover {
+    background: var(--color-bg-hover);
+    color: var(--color-text-primary);
+}
+
+.mobile-nav__link--active {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-semibold);
+    border-left-color: var(--color-pv);
+    background: var(--color-bg-hover);
+}
+
+.mobile-nav__link:focus-visible {
+    outline: 2px solid var(--color-pv);
+    outline-offset: -2px;
+}
+
+/* Hide mobile overlay on larger screens */
+@media (min-width: 640px) {
+    .mobile-nav {
+        display: none;
+    }
+}
+
+/* === Reduced Motion === */
+@media (prefers-reduced-motion: reduce) {
+    .mobile-nav__panel {
+        transition: none;
+    }
+    .mobile-nav__backdrop {
+        transition: none;
+    }
+    .site-nav-link {
+        transition: none;
+    }
+    .mobile-nav__link {
+        transition: none;
+    }
+    .site-header__hamburger {
+        transition: none;
+    }
+}
