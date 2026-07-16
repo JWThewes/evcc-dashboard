@@ -5,3 +5,4 @@ pub mod login;
 pub mod mobile;
 pub mod partials;
 pub mod settings;
+pub mod views;

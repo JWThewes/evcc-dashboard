@@ -1,18 +1,16 @@
-mod config;
-mod db;
-mod model;
-mod mqtt;
-mod tasks;
-mod web;
-
 use clap::Parser;
 use std::path::PathBuf;
 use std::sync::Arc;
 use tokio::net::TcpListener;
 use tokio::sync::RwLock;
 
-use crate::model::CurrentState;
-use crate::web::state::AppState;
+use evcc_dashboard::config;
+use evcc_dashboard::db;
+use evcc_dashboard::model::CurrentState;
+use evcc_dashboard::mqtt;
+use evcc_dashboard::tasks;
+use evcc_dashboard::web;
+use evcc_dashboard::web::state::AppState;
 
 #[derive(Parser)]
 #[command(name = "evcc-dashboard")]

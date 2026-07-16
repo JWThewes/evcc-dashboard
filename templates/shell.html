@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="{{ theme }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>evcc Dashboard</title>
+    <!-- FOUC prevention: apply theme before CSS loads -->
+    <script>
+      (function(){var t;try{t=localStorage.getItem("evcc-theme")}catch(e){}if(t!=="light"&&t!=="dark"){var c=document.cookie.match(/evcc_theme=(\w+)/);t=c?c[1]:"dark"}if(t!=="light")t="dark";document.documentElement.setAttribute("data-theme",t)})();
+    </script>
+    <link rel="stylesheet" href="{{ base_path }}/static/css/tokens.css">
+    <link rel="stylesheet" href="{{ base_path }}/static/css/shell.css">
+    <script src="{{ base_path }}/static/js/htmx.min.js" defer></script>
+    <script src="{{ base_path }}/static/js/theme.js" defer></script>
+</head>
+<body>
+    <a href="#view-content" class="skip-link" data-testid="skip-link">Skip to content</a>
+
+    <main id="view-content" class="shell-main" role="main" aria-label="Main content" data-testid="view-content"
+          hx-target="#view-content" hx-swap="innerHTML" hx-push-url="true">
+        {{ content|safe }}
+    </main>
+
+    <nav id="tab-bar" class="tab-bar" role="tablist" aria-label="Main navigation" data-testid="tab-bar">
+        {% for tab in tabs %}
+        <a href="{{ base_path }}{{ tab.view.path() }}"
+           role="tab"
+           aria-selected="{{ tab.is_active }}"
+           tabindex="{% if tab.is_active %}0{% else %}-1{% endif %}"
+           class="tab-item"
+           hx-get="{{ base_path }}{{ tab.view.path() }}"
+           hx-target="#view-content"
+           hx-push-url="true"
+           data-testid="tab-{{ tab.view.slug() }}">
+            <span class="tab-icon">{{ tab.view.icon_svg()|safe }}</span>
+            <span class="tab-label">{{ tab.view.label() }}</span>
+        </a>
+        {% endfor %}
+    </nav>
+</body>
+</html>

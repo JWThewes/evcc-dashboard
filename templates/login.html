@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - evcc Dashboard</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="{{ base_path }}/static/css/tokens.css">
     <link rel="stylesheet" href="{{ base_path }}/static/css/app.css">
 </head>
 <body>
@@ -16,8 +14,8 @@
             {% if error %}
             <p class="login-error">Invalid password</p>
             {% endif %}
-            <input type="password" name="password" placeholder="Password" autofocus required>
-            <button type="submit">Sign In</button>
+            <input type="password" name="password" placeholder="Password" autofocus required data-testid="login-password">
+            <button type="submit" data-testid="login-submit">Sign In</button>
         </form>
     </div>
 </body>

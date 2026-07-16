@@ -1,0 +1,29 @@
+<div data-testid="view-settings">
+    <section class="settings-section">
+        <h2>Theme</h2>
+        <div class="theme-toggle-group" role="radiogroup" aria-label="Theme preference" data-testid="theme-toggle">
+            <button type="button" class="theme-btn" data-theme-value="dark" aria-pressed="{% if theme == "dark" %}true{% else %}false{% endif %}" data-testid="theme-btn-dark">Dark</button>
+            <button type="button" class="theme-btn" data-theme-value="light" aria-pressed="{% if theme == "light" %}true{% else %}false{% endif %}" data-testid="theme-btn-light">Light</button>
+        </div>
+    </section>
+
+    {% if has_key %}
+    <section class="settings-section">
+        <h2>Mobile App Pairing</h2>
+        <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--space-3);">
+            Scan with the evcc companion app to connect.
+        </p>
+        <div class="qr-container" data-testid="qr-code">
+            {{ qr_svg|safe }}
+        </div>
+    </section>
+    {% endif %}
+
+    <section class="settings-section">
+        <h2>System</h2>
+        <dl class="system-info" data-testid="system-info">
+            <dt>Version</dt>
+            <dd>{{ version }}</dd>
+        </dl>
+    </section>
+</div>
