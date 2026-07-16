@@ -26,10 +26,26 @@ pub fn build_router(state: AppState) -> Router {
             middleware::require_bearer,
         ));
 
-    let protected = Router::new()
-        .route("/", get(routes::dashboard::index))
-        .route("/history", get(routes::dashboard::history))
-        .route("/settings", get(routes::settings::index))
+    // New view routes (foundation unit)
+    let view_routes = Router::new()
+        .route("/", get(routes::views::root_redirect))
+        .route("/overview", get(routes::views::overview))
+        .route("/charging", get(routes::views::charging))
+        .route("/history", get(routes::views::history_view))
+        .route("/compare", get(routes::views::compare))
+        .route("/settings", get(routes::views::settings));
+
+    // Legacy routes preserved for backward compatibility
+    let legacy_routes = Router::new()
+        .route("/legacy", get(routes::dashboard::index))
+        .route("/legacy/history", get(routes::dashboard::history))
+        .route(
+            "/legacy/settings",
+            get(routes::settings::index),
+        );
+
+    let protected = view_routes
+        .merge(legacy_routes)
         .route("/partials/energy-flow", get(routes::partials::energy_flow))
         .route("/partials/loadpoints", get(routes::partials::loadpoints))
         .route("/partials/battery", get(routes::partials::battery_status))

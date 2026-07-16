@@ -1,0 +1,45 @@
+/* Navigation Shell — evcc Dashboard (foundation unit) */
+*,*::before,*::after { box-sizing: border-box; }
+html { font-family: var(--font-family); font-size: 16px; line-height: var(--line-height-normal); color: var(--color-text-primary); background: var(--color-surface-0); -webkit-font-smoothing: antialiased; }
+body { margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; }
+.skip-link { position: absolute; top: -40px; left: 0; background: var(--color-surface-1); color: var(--color-text-primary); padding: var(--space-2) var(--space-4); z-index: 1000; }
+.skip-link:focus { top: 0; }
+.shell-main { flex: 1; padding: var(--space-4); padding-bottom: calc(var(--tab-bar-height) + var(--space-4)); max-width: 1200px; margin: 0 auto; width: 100%; }
+.view-content { animation: fadeIn var(--duration-fast) var(--easing-default); }
+@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+
+/* Tab Bar */
+.tab-bar { position: fixed; bottom: 0; left: 0; right: 0; height: var(--tab-bar-height); background: var(--tab-bar-bg); border-top: 1px solid var(--tab-bar-border); display: flex; align-items: center; justify-content: space-around; padding: 0 var(--space-2); z-index: 100; }
+.tab-item { display: flex; flex-direction: column; align-items: center; gap: var(--space-1); padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); text-decoration: none; color: var(--tab-color-inactive); font-size: var(--font-size-xs); font-weight: var(--font-weight-medium); cursor: pointer; border: none; background: none; min-width: 56px; transition: color var(--duration-fast), background var(--duration-fast); }
+.tab-item:hover { color: var(--color-text-secondary); background: var(--color-surface-2); }
+.tab-item:focus-visible { outline: 2px solid var(--color-grid); outline-offset: 2px; }
+.tab-item[aria-selected="true"] { color: var(--tab-color-active); }
+.tab-item[aria-selected="true"] .tab-icon { color: var(--color-grid); }
+.tab-icon { width: var(--tab-icon-size); height: var(--tab-icon-size); flex-shrink: 0; }
+.tab-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 64px; }
+
+/* Placeholders */
+.view-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 50vh; text-align: center; color: var(--color-text-muted); }
+.view-placeholder h2 { margin: 0 0 var(--space-2); font-size: var(--font-size-xl); font-weight: var(--font-weight-semibold); color: var(--color-text-secondary); }
+.view-placeholder p { margin: 0; font-size: var(--font-size-sm); }
+
+/* Settings */
+.settings-section { margin-bottom: var(--space-6); }
+.settings-section h2 { font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); margin: 0 0 var(--space-3); color: var(--color-text-primary); }
+.theme-toggle-group { display: flex; gap: var(--space-2); }
+.theme-btn { padding: var(--space-2) var(--space-4); border: 1px solid var(--card-border); border-radius: var(--radius-md); background: var(--color-surface-2); color: var(--color-text-secondary); font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); cursor: pointer; transition: all var(--duration-fast); }
+.theme-btn:hover { background: var(--color-surface-3); }
+.theme-btn[aria-pressed="true"] { background: var(--color-grid); color: #fff; border-color: var(--color-grid); }
+.theme-btn:focus-visible { outline: 2px solid var(--color-grid); outline-offset: 2px; }
+.qr-container { display: flex; justify-content: center; padding: var(--space-4); background: var(--color-surface-2); border-radius: var(--radius-lg); }
+.qr-container svg { max-width: 200px; height: auto; }
+.system-info { font-size: var(--font-size-sm); color: var(--color-text-muted); }
+.system-info dt { font-weight: var(--font-weight-medium); color: var(--color-text-secondary); }
+.system-info dd { margin: 0 0 var(--space-2); }
+
+/* Responsive */
+@media (max-width: 639px) {
+  .tab-bar { height: 56px; }
+  .tab-label { display: none; }
+  .shell-main { padding-bottom: calc(56px + var(--space-4)); }
+}
