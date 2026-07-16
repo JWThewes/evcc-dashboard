@@ -1,21 +1,12 @@
-// Chart initialization and management
-const charts = {};
+// Chart initialization and management — ECharts theme engine (echarts-integration unit)
+// Theme derived from CSS design tokens per contract-css-tokens / contract-echarts-theme-name
+"use strict";
 
-const COLORS = {
-    grid_power: '#f87171',
-    pv_power: '#fbbf24',
-    home_power: '#60a5fa',
-    battery_power: '#34d399',
-    battery_soc: '#a78bfa',
-    grid_import_wh: '#f87171',
-    grid_export_wh: '#fb923c',
-    pv_production_wh: '#fbbf24',
-    home_consumption_wh: '#60a5fa',
-    self_sufficiency_pct: '#34d399',
-    charge_power: '#2dd4bf',
-};
+var charts = {};
+var THEME_NAME = "evcc-energy";
+var _themeListenerRegistered = false;
 
-const LABELS = {
+var LABELS = {
     grid_power: 'Grid Power',
     pv_power: 'PV Power',
     home_power: 'Home Consumption',
@@ -29,43 +20,174 @@ const LABELS = {
     charge_power: 'Charge Power',
 };
 
-// Shared theme constants
-const THEME = {
-    bg: 'rgba(22, 27, 45, 0.85)',
-    border: 'rgba(255, 255, 255, 0.08)',
-    text: '#eaecf0',
-    textMuted: '#6b7280',
-    textSecondary: '#a1a7b4',
-    gridLine: 'rgba(255, 255, 255, 0.04)',
-    axisLine: 'rgba(255, 255, 255, 0.08)',
-    accentFill: 'rgba(59, 130, 246, 0.12)',
+// --- Fallback colors (dark palette) for when CSS tokens are unavailable ---
+var FALLBACK_COLORS = {
+    "--color-solar": "#f5a623",
+    "--color-grid": "#4a9eff",
+    "--color-battery": "#4caf50",
+    "--color-ev": "#9c6ade",
+    "--color-home": "#d0d0e0",
+    "--color-surface-0": "#0f0f1a",
+    "--color-surface-1": "#1a1a2e",
+    "--color-surface-2": "#2a2a40",
+    "--color-surface-3": "#3a3a55",
+    "--color-text-primary": "#f5f5fa",
+    "--color-text-secondary": "#9a9ab0",
+    "--color-text-muted": "#5a5a75",
+    "--color-positive": "#4caf50",
+    "--color-negative": "#ef5350",
+    "--color-neutral": "#9a9ab0"
 };
 
+// --- Theme Engine: Token Reader ---
+function getComputedTokens() {
+    var root = document.documentElement;
+    var styles = window.getComputedStyle(root);
+    var tokenNames = [
+        "--color-solar",
+        "--color-grid",
+        "--color-battery",
+        "--color-ev",
+        "--color-home",
+        "--color-surface-0",
+        "--color-surface-1",
+        "--color-surface-2",
+        "--color-surface-3",
+        "--color-text-primary",
+        "--color-text-secondary",
+        "--color-text-muted",
+        "--color-positive",
+        "--color-negative",
+        "--color-neutral"
+    ];
+    var tokens = {};
+    for (var i = 0; i < tokenNames.length; i++) {
+        var name = tokenNames[i];
+        var val = styles.getPropertyValue(name).trim();
+        tokens[name] = val || FALLBACK_COLORS[name] || "#666";
+    }
+    return tokens;
+}
+
+// --- Theme Engine: Theme Builder ---
+function buildThemeObject(tokens) {
+    var fontFamily = window.getComputedStyle(document.documentElement)
+        .getPropertyValue("--font-family").trim() ||
+        '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+
+    return {
+        color: [
+            tokens["--color-solar"],
+            tokens["--color-grid"],
+            tokens["--color-battery"],
+            tokens["--color-ev"],
+            tokens["--color-home"],
+            tokens["--color-positive"],
+            tokens["--color-negative"]
+        ],
+        backgroundColor: "transparent",
+        textStyle: {
+            color: tokens["--color-text-primary"],
+            fontFamily: fontFamily
+        },
+        title: {
+            textStyle: { color: tokens["--color-text-primary"] },
+            subtextStyle: { color: tokens["--color-text-secondary"] }
+        },
+        legend: {
+            textStyle: { color: tokens["--color-text-secondary"] }
+        },
+        tooltip: {
+            backgroundColor: tokens["--color-surface-1"],
+            borderColor: tokens["--color-surface-3"],
+            textStyle: { color: tokens["--color-text-primary"] }
+        },
+        categoryAxis: {
+            axisLine: { lineStyle: { color: tokens["--color-surface-3"] } },
+            axisTick: { lineStyle: { color: tokens["--color-surface-3"] } },
+            axisLabel: { color: tokens["--color-text-muted"] },
+            splitLine: { lineStyle: { color: tokens["--color-surface-2"] } }
+        },
+        valueAxis: {
+            axisLine: { lineStyle: { color: tokens["--color-surface-3"] } },
+            axisTick: { lineStyle: { color: tokens["--color-surface-3"] } },
+            axisLabel: { color: tokens["--color-text-muted"] },
+            splitLine: { lineStyle: { color: tokens["--color-surface-2"] } },
+            nameTextStyle: { color: tokens["--color-text-secondary"] }
+        },
+        dataZoom: {
+            borderColor: tokens["--color-surface-3"],
+            fillerColor: tokens["--color-surface-2"] + "33",
+            handleColor: tokens["--color-grid"],
+            textStyle: { color: tokens["--color-text-secondary"] }
+        }
+    };
+}
+
+// --- Theme Engine: Registration ---
+function registerEnergyTheme() {
+    if (typeof echarts === "undefined") {
+        console.warn("[evcc-charts] echarts not available, skipping theme registration");
+        return;
+    }
+    try {
+        var tokens = getComputedTokens();
+        var themeObj = buildThemeObject(tokens);
+        echarts.registerTheme(THEME_NAME, themeObj);
+    } catch (e) {
+        console.warn("[evcc-charts] theme registration failed:", e);
+    }
+}
+
+// --- Theme Engine: Re-render on toggle ---
+function rerenderCharts() {
+    try {
+        var keys = Object.keys(charts);
+        for (var i = 0; i < keys.length; i++) {
+            var chartType = keys[i];
+            var info = charts[chartType];
+            if (!info || !info.element || !info.element.isConnected) {
+                delete charts[chartType];
+                continue;
+            }
+            var range = info.element.dataset.range || "24h";
+            try { info.instance.dispose(); } catch (e) { /* already disposed */ }
+            var newInstance = echarts.init(info.element, THEME_NAME);
+            charts[chartType] = { instance: newInstance, element: info.element, baseUrl: info.baseUrl };
+            fetchAndRender(newInstance, chartType, info.baseUrl, range);
+        }
+    } catch (e) {
+        console.warn("[evcc-charts] rerender failed:", e);
+    }
+}
+
+// --- Chart Utilities ---
 function rangeToSeconds(range) {
-    const map = { '24h': 86400, '7d': 604800, '30d': 2592000, '90d': 7776000 };
+    var map = { '24h': 86400, '7d': 604800, '30d': 2592000, '90d': 7776000 };
     return map[range] || 604800;
 }
 
 function initChart(el) {
-    const chartType = el.dataset.chartType;
-    const baseUrl = el.dataset.chartUrl;
-    const range = el.dataset.range || '24h';
+    if (typeof echarts === "undefined") return;
+    var chartType = el.dataset.chartType;
+    var baseUrl = el.dataset.chartUrl;
+    var range = el.dataset.range || '24h';
 
-    const chart = echarts.init(el);
+    var chart = echarts.init(el, THEME_NAME);
     charts[chartType] = { instance: chart, element: el, baseUrl: baseUrl };
 
     fetchAndRender(chart, chartType, baseUrl, range);
 }
 
 function fetchAndRender(chart, chartType, baseUrl, range) {
-    const now = Math.floor(Date.now() / 1000);
-    const from = now - rangeToSeconds(range);
-    const url = baseUrl + (baseUrl.includes('?') ? '&' : '?') + `from=${from}&to=${now}&resolution=auto`;
+    var now = Math.floor(Date.now() / 1000);
+    var from = now - rangeToSeconds(range);
+    var url = baseUrl + (baseUrl.includes('?') ? '&' : '?') + 'from=' + from + '&to=' + now + '&resolution=auto';
 
     fetch(url)
-        .then(r => r.json())
-        .then(data => renderChart(chart, chartType, data))
-        .catch(err => console.error(`Failed to load chart ${chartType}:`, err));
+        .then(function(r) { return r.json(); })
+        .then(function(data) { renderChart(chart, chartType, data); })
+        .catch(function(err) { console.error('Failed to load chart ' + chartType + ':', err); });
 }
 
 function renderChart(chart, chartType, data) {
@@ -74,14 +196,13 @@ function renderChart(chart, chartType, data) {
             title: {
                 text: 'No data available',
                 left: 'center',
-                top: 'center',
-                textStyle: { color: THEME.textMuted, fontSize: 14, fontFamily: 'Inter, sans-serif' }
+                top: 'center'
             }
         });
         return;
     }
 
-    const timestamps = data.timestamps.map(ts => new Date(ts * 1000));
+    var timestamps = data.timestamps.map(function(ts) { return new Date(ts * 1000); });
 
     if (chartType === 'energy') {
         renderBarChart(chart, timestamps, data.series);
@@ -91,38 +212,46 @@ function renderChart(chart, chartType, data) {
 }
 
 function renderLineChart(chart, chartType, timestamps, series) {
-    const seriesConfig = [];
-    const yAxes = [];
-    let hasSecondAxis = false;
+    var seriesConfig = [];
+    var yAxes = [];
+    var hasSecondAxis = false;
 
-    for (const [key, values] of Object.entries(series)) {
-        const isPercentage = key.includes('soc') || key.includes('pct');
+    var keys = Object.keys(series);
+    for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+        var values = series[key];
+        var isPercentage = key.includes('soc') || key.includes('pct');
         if (isPercentage && !hasSecondAxis) {
             hasSecondAxis = true;
         }
 
-        seriesConfig.push({
+        var config = {
             name: LABELS[key] || key,
             type: 'line',
             data: values,
             smooth: 0.3,
             symbol: 'none',
             lineStyle: { width: 2 },
-            itemStyle: { color: COLORS[key] || '#666' },
-            yAxisIndex: isPercentage ? 1 : 0,
-            areaStyle: key === 'pv_power' ? {
+            yAxisIndex: isPercentage ? 1 : 0
+        };
+
+        // PV area gradient using first color in theme palette (solar)
+        if (key === 'pv_power') {
+            config.areaStyle = {
                 color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                    { offset: 0, color: 'rgba(251, 191, 36, 0.2)' },
-                    { offset: 1, color: 'rgba(251, 191, 36, 0)' },
+                    { offset: 0, color: 'rgba(245, 166, 35, 0.2)' },
+                    { offset: 1, color: 'rgba(245, 166, 35, 0)' }
                 ])
-            } : undefined,
-        });
+            };
+        }
+
+        seriesConfig.push(config);
     }
 
     yAxes.push({
         type: 'value',
         name: 'Power (W)',
-        axisLabel: { formatter: '{value} W' },
+        axisLabel: { formatter: '{value} W' }
     });
 
     if (hasSecondAxis) {
@@ -131,146 +260,111 @@ function renderLineChart(chart, chartType, timestamps, series) {
             name: '%',
             min: 0,
             max: 100,
-            axisLabel: { formatter: '{value}%' },
+            axisLabel: { formatter: '{value}%' }
         });
     }
 
     chart.setOption({
         tooltip: {
             trigger: 'axis',
-            backgroundColor: THEME.bg,
-            borderColor: THEME.border,
-            borderWidth: 1,
-            textStyle: { color: THEME.text, fontSize: 13, fontFamily: 'Inter, sans-serif' },
-            formatter: function (params) {
-                let html = `<div style="margin-bottom:6px;color:${THEME.textSecondary};font-size:12px">${params[0].axisValueLabel}</div>`;
-                params.forEach(p => {
-                    const val = p.value != null ? p.value.toFixed(0) : '--';
-                    const unit = p.seriesName.includes('%') ? '%' : ' W';
-                    html += `<div style="display:flex;justify-content:space-between;gap:16px;line-height:1.7">${p.marker} <span>${p.seriesName}</span> <b>${val}${unit}</b></div>`;
-                });
-                return html;
-            }
+            borderWidth: 1
         },
         legend: {
             bottom: 0,
-            textStyle: { color: THEME.textSecondary, fontSize: 12, fontFamily: 'Inter, sans-serif' },
-            itemGap: 16,
+            itemGap: 16
         },
         grid: { left: 60, right: hasSecondAxis ? 60 : 20, bottom: 110, top: 20 },
         xAxis: {
             type: 'category',
             data: timestamps,
             axisLabel: {
-                color: THEME.textMuted,
-                fontSize: 11,
-                fontFamily: 'Inter, sans-serif',
-                formatter: function (val) {
-                    const d = new Date(val);
+                formatter: function(val) {
+                    var d = new Date(val);
                     return d.getHours().toString().padStart(2, '0') + ':' +
                            d.getMinutes().toString().padStart(2, '0');
                 }
             },
-            axisLine: { lineStyle: { color: THEME.axisLine } },
             axisTick: { show: false },
-            boundaryGap: false,
+            boundaryGap: false
         },
-        yAxis: yAxes.map(y => ({
-            ...y,
-            axisLabel: { ...y.axisLabel, color: THEME.textMuted, fontSize: 11, fontFamily: 'Inter, sans-serif' },
-            axisLine: { show: false },
-            splitLine: { lineStyle: { color: THEME.gridLine } },
-            nameTextStyle: { color: THEME.textSecondary, fontSize: 12, fontFamily: 'Inter, sans-serif' },
-        })),
+        yAxis: yAxes.map(function(y) {
+            return {
+                type: y.type,
+                name: y.name,
+                min: y.min,
+                max: y.max,
+                axisLabel: y.axisLabel,
+                axisLine: { show: false }
+            };
+        }),
         series: seriesConfig,
         dataZoom: [
             { type: 'inside' },
             {
                 type: 'slider',
                 bottom: 28,
-                height: 20,
-                borderColor: THEME.border,
-                fillerColor: THEME.accentFill,
-                dataBackground: {
-                    lineStyle: { color: 'rgba(255,255,255,0.08)' },
-                    areaStyle: { color: 'rgba(255,255,255,0.03)' },
-                },
-                selectedDataBackground: {
-                    lineStyle: { color: 'rgba(255,255,255,0.12)' },
-                    areaStyle: { color: 'rgba(255,255,255,0.05)' },
-                },
-                handleStyle: { color: '#3b82f6', borderColor: 'rgba(59,130,246,0.4)' },
-                moveHandleStyle: { color: 'rgba(255,255,255,0.1)' },
-                textStyle: { color: THEME.textSecondary, fontSize: 11, fontFamily: 'Inter, sans-serif' },
-            },
-        ],
+                height: 20
+            }
+        ]
     }, true);
 }
 
 function renderBarChart(chart, timestamps, series) {
-    const seriesConfig = [];
-    const categories = timestamps.map(d => d.toLocaleDateString());
+    var seriesConfig = [];
+    var categories = timestamps.map(function(d) { return d.toLocaleDateString(); });
 
-    for (const [key, values] of Object.entries(series)) {
+    var keys = Object.keys(series);
+    for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
         if (key === 'self_sufficiency_pct') continue;
         seriesConfig.push({
             name: LABELS[key] || key,
             type: 'bar',
-            data: values.map(v => v != null ? (v / 1000).toFixed(2) : 0),
-            itemStyle: {
-                color: COLORS[key] || '#666',
-                borderRadius: [3, 3, 0, 0],
-            },
-            barMaxWidth: 24,
+            data: series[key].map(function(v) { return v != null ? (v / 1000).toFixed(2) : 0; }),
+            itemStyle: { borderRadius: [3, 3, 0, 0] },
+            barMaxWidth: 24
         });
     }
 
     chart.setOption({
         tooltip: {
             trigger: 'axis',
-            backgroundColor: THEME.bg,
-            borderColor: THEME.border,
             borderWidth: 1,
-            textStyle: { color: THEME.text, fontSize: 13, fontFamily: 'Inter, sans-serif' },
-            formatter: function (params) {
-                let html = `<div style="margin-bottom:6px;color:${THEME.textSecondary};font-size:12px">${params[0].axisValueLabel}</div>`;
-                params.forEach(p => {
-                    html += `<div style="display:flex;justify-content:space-between;gap:16px;line-height:1.7">${p.marker} <span>${p.seriesName}</span> <b>${p.value} kWh</b></div>`;
+            formatter: function(params) {
+                var html = '<div style="margin-bottom:6px;font-size:12px">' + params[0].axisValueLabel + '</div>';
+                params.forEach(function(p) {
+                    html += '<div style="display:flex;justify-content:space-between;gap:16px;line-height:1.7">' +
+                        p.marker + ' <span>' + p.seriesName + '</span> <b>' + p.value + ' kWh</b></div>';
                 });
                 return html;
             }
         },
         legend: {
             bottom: 0,
-            textStyle: { color: THEME.textSecondary, fontSize: 12, fontFamily: 'Inter, sans-serif' },
-            itemGap: 16,
+            itemGap: 16
         },
         grid: { left: 60, right: 20, bottom: 30, top: 20 },
         xAxis: {
             type: 'category',
             data: categories,
-            axisLabel: { color: THEME.textMuted, fontSize: 11, fontFamily: 'Inter, sans-serif' },
-            axisLine: { lineStyle: { color: THEME.axisLine } },
-            axisTick: { show: false },
+            axisTick: { show: false }
         },
         yAxis: {
             type: 'value',
             name: 'Energy (kWh)',
-            nameTextStyle: { color: THEME.textSecondary, fontSize: 12, fontFamily: 'Inter, sans-serif' },
-            axisLabel: { color: THEME.textMuted, formatter: '{value} kWh', fontSize: 11, fontFamily: 'Inter, sans-serif' },
-            axisLine: { show: false },
-            splitLine: { lineStyle: { color: THEME.gridLine } },
+            axisLabel: { formatter: '{value} kWh' },
+            axisLine: { show: false }
         },
-        series: seriesConfig,
+        series: seriesConfig
     }, true);
 }
 
 // Range selector for history page
 function updateChartRange(range) {
-    document.querySelectorAll('[data-chart-type]').forEach(el => {
+    document.querySelectorAll('[data-chart-type]').forEach(function(el) {
         el.dataset.range = range;
-        const chartType = el.dataset.chartType;
-        const info = charts[chartType];
+        var chartType = el.dataset.chartType;
+        var info = charts[chartType];
         if (info) {
             fetchAndRender(info.instance, chartType, info.baseUrl, range);
         }
@@ -279,25 +373,46 @@ function updateChartRange(range) {
 
 // Auto-refresh dashboard charts every 30 seconds
 function startChartRefresh() {
-    setInterval(() => {
-        document.querySelectorAll('[data-chart-type]').forEach(el => {
-            const chartType = el.dataset.chartType;
-            const info = charts[chartType];
+    setInterval(function() {
+        document.querySelectorAll('[data-chart-type]').forEach(function(el) {
+            var chartType = el.dataset.chartType;
+            var info = charts[chartType];
             if (info) {
-                const range = el.dataset.range || '24h';
+                var range = el.dataset.range || '24h';
                 fetchAndRender(info.instance, chartType, info.baseUrl, range);
             }
         });
     }, 30000);
 }
 
+// --- Event Coordination ---
+function onThemeChanged() {
+    registerEnergyTheme();
+    rerenderCharts();
+}
+
 // Initialize all charts on page load
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
+    // Register theme BEFORE any chart init (Rule 1)
+    registerEnergyTheme();
+
     document.querySelectorAll('[data-chart-type]').forEach(initChart);
     startChartRefresh();
+
+    // Listen for theme toggles (idempotency guard)
+    if (!_themeListenerRegistered) {
+        document.addEventListener('theme-changed', onThemeChanged);
+        _themeListenerRegistered = true;
+    }
 });
 
 // Handle window resize
-window.addEventListener('resize', () => {
-    Object.values(charts).forEach(c => c.instance.resize());
+window.addEventListener('resize', function() {
+    var keys = Object.keys(charts);
+    for (var i = 0; i < keys.length; i++) {
+        var info = charts[keys[i]];
+        if (info && info.instance) {
+            try { info.instance.resize(); } catch (e) { /* disposed */ }
+        }
+    }
 });
