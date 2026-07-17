@@ -1,4 +1,29 @@
-<div class="view-placeholder" data-testid="view-history">
-    <h2>History</h2>
-    <p>Time-series charts coming soon</p>
-</div>
+<section class="view-history" data-testid="view-history" aria-label="Energy history">
+    <h2 class="view-title">History</h2>
+
+    <!-- Range selector -->
+    <div class="history-range-selector" role="group" aria-label="Time range" data-testid="history-range-selector">
+        {% for range in ranges %}
+        <button type="button"
+                class="range-btn"
+                data-testid="range-btn-{{ range.slug() }}"
+                data-range-seconds="{{ range.seconds() }}"
+                data-range-resolution="{{ range.resolution() }}"
+                data-range-slug="{{ range.slug() }}"
+                aria-pressed="{% if range.is_default() %}true{% else %}false{% endif %}">
+            {{ range.label() }}
+        </button>
+        {% endfor %}
+    </div>
+
+    <!-- Chart container (detected by charts.js via data-chart-url) -->
+    <div class="history-chart-wrapper" data-testid="history-chart-wrapper">
+        <div class="chart-container"
+             data-testid="history-chart"
+             data-chart-url="{{ chart_url }}"
+             data-chart-type="energy"
+             aria-label="Energy history chart"
+             role="img">
+        </div>
+    </div>
+</section>

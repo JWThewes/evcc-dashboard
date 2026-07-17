@@ -1,3 +1,43 @@
 <section class="view-overview" data-testid="view-overview" aria-label="Energy overview">
-  {{ energy_flow_html|safe }}
+    <!-- Self-sufficiency hero metric -->
+    <div class="overview-hero" data-testid="self-sufficiency-hero">
+        <span class="hero-value" aria-label="Self-sufficiency percentage">
+            {% match self_sufficiency_pct %}
+                {% when Some with (pct) %}{{ pct }}%{% when None %}--{% endmatch %}
+        </span>
+        <span class="hero-label">Self-Sufficiency</span>
+    </div>
+
+    <!-- Energy flow visualization -->
+    <div class="overview-energy-flow" data-testid="energy-flow-container">
+        {{ energy_flow_html|safe }}
+    </div>
+
+    <!-- Summary cards with htmx polling -->
+    <div id="overview-summary-container"
+         class="summary-cards"
+         data-testid="overview-summary"
+         hx-get="{{ base_path }}/partials/overview-summary"
+         hx-trigger="every 60s"
+         hx-swap="innerHTML"
+         aria-live="polite"
+         aria-label="Today's energy summary">
+        {% for card in summary_cards %}
+        <div class="summary-card" data-testid="summary-card-{{ card.id }}">
+            <div class="summary-card-icon" aria-hidden="true">{{ card.icon_svg|safe }}</div>
+            <div class="summary-card-content">
+                <span class="summary-card-label">{{ card.label }}</span>
+                <span class="summary-card-value">{{ card.value }}</span>
+            </div>
+            {% if let Some(ref delta) = card.delta %}
+            <div class="summary-card-delta {{ delta.direction.css_class() }}"
+                 aria-label="{{ delta.aria_label }}"
+                 data-testid="delta-{{ card.id }}">
+                {{ delta.direction.arrow_svg()|safe }}
+                <span class="delta-value">{{ delta.percent_display() }}</span>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
 </section>

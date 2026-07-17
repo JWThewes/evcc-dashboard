@@ -1,0 +1,17 @@
+{% for card in summary_cards %}
+<div class="summary-card" data-testid="summary-card-{{ card.id }}">
+    <div class="summary-card-icon" aria-hidden="true">{{ card.icon_svg|safe }}</div>
+    <div class="summary-card-content">
+        <span class="summary-card-label">{{ card.label }}</span>
+        <span class="summary-card-value">{{ card.value }}</span>
+    </div>
+    {% if let Some(ref delta) = card.delta %}
+    <div class="summary-card-delta {{ delta.direction.css_class() }}"
+         aria-label="{{ delta.aria_label }}"
+         data-testid="delta-{{ card.id }}">
+        {{ delta.direction.arrow_svg()|safe }}
+        <span class="delta-value">{{ delta.percent_display() }}</span>
+    </div>
+    {% endif %}
+</div>
+{% endfor %}

@@ -51,6 +51,8 @@ pub fn build_router(state: AppState) -> Router {
             "/partials/energy-flow-svg",
             get(routes::energy_flow::energy_flow_partial),
         )
+        .route("/partials/overview-summary", get(routes::views::overview_summary_partial))
+        .route("/partials/charging-cards", get(routes::views::charging_cards_partial))
         .route("/partials/loadpoints", get(routes::partials::loadpoints))
         .route("/partials/battery", get(routes::partials::battery_status))
         .route("/partials/summary", get(routes::partials::summary_stats))
