@@ -144,7 +144,9 @@ pub struct ShellTemplate<'a> {
 /// Overview partial (walking skeleton).
 #[derive(Template)]
 #[template(path = "views/overview.html")]
-pub struct OverviewPartial;
+pub struct OverviewPartial {
+    pub energy_flow_html: String,
+}
 
 /// Charging partial (walking skeleton).
 #[derive(Template)]
@@ -261,8 +263,20 @@ fn render_oob_tabs(base_path: &str, active: ViewId) -> String {
 // ---------------------------------------------------------------------------
 
 pub async fn overview(State(state): State<AppState>, headers: HeaderMap) -> Html<String> {
-    let partial = OverviewPartial.render().unwrap_or_default();
-    render_view(&headers, &state.config.server.base_path, ViewId::Overview, partial)
+    let current = state.current_state.read().await;
+    let energy_flow_html =
+        super::energy_flow::render_energy_flow_svg(&current.site, &state.config.server.base_path);
+    drop(current);
+
+    let partial = OverviewPartial { energy_flow_html }
+        .render()
+        .unwrap_or_default();
+    render_view(
+        &headers,
+        &state.config.server.base_path,
+        ViewId::Overview,
+        partial,
+    )
 }
 
 pub async fn charging(State(state): State<AppState>, headers: HeaderMap) -> Html<String> {

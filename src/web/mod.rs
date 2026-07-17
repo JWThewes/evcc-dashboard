@@ -47,6 +47,10 @@ pub fn build_router(state: AppState) -> Router {
     let protected = view_routes
         .merge(legacy_routes)
         .route("/partials/energy-flow", get(routes::partials::energy_flow))
+        .route(
+            "/partials/energy-flow-svg",
+            get(routes::energy_flow::energy_flow_partial),
+        )
         .route("/partials/loadpoints", get(routes::partials::loadpoints))
         .route("/partials/battery", get(routes::partials::battery_status))
         .route("/partials/summary", get(routes::partials::summary_stats))

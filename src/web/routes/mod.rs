@@ -1,5 +1,6 @@
 pub mod charts;
 pub mod dashboard;
+pub mod energy_flow;
 pub mod health;
 pub mod login;
 pub mod mobile;

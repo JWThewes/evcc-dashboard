@@ -82,7 +82,30 @@ pub fn apply_message(state: &mut CurrentState, prefix: &str, topic: &str, payloa
         }
     }
 
+    // Derive ev_power and ev_connected from loadpoint aggregation
+    derive_ev_state(state);
+
     state.last_updated = Some(chrono::Utc::now().timestamp());
+}
+
+/// Derive ev_power (sum of all charge_power) and ev_connected from loadpoints.
+fn derive_ev_state(state: &mut CurrentState) {
+    let mut total_ev_power: f64 = 0.0;
+    let mut any_connected = false;
+    for lp in state.loadpoints.values() {
+        if lp.connected.unwrap_or(false) {
+            any_connected = true;
+        }
+        if let Some(p) = lp.charge_power {
+            total_ev_power += p;
+        }
+    }
+    state.site.ev_power = if total_ev_power > 0.0 || any_connected {
+        Some(total_ev_power)
+    } else {
+        None
+    };
+    state.site.ev_connected = any_connected;
 }
 
 fn parse_loadpoint_message(state: &mut CurrentState, path: &str, value: &str) {

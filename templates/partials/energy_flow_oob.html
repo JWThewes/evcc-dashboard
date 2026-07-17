@@ -1,0 +1,15 @@
+<!-- OOB swap fragments for live energy flow updates (contract-oob-swap-ids) -->
+<span id="ef-self-sufficiency" hx-swap-oob="true" data-testid="ef-self-sufficiency">{{ state.self_sufficiency_display() }}</span>
+<span id="ef-pv-power" hx-swap-oob="true" class="ef-node-label" data-testid="ef-pv-power" data-power="{{ state.pv_path.power_display() }}">{{ state.pv_power_display() }} W</span>
+<span id="ef-grid-power" hx-swap-oob="true" class="ef-node-label" data-testid="ef-grid-power" data-power="{{ state.grid_path.power_display() }}" data-direction="{{ state.grid_path.direction.css_class() }}">{{ state.grid_power_abs_display() }} W</span>
+<span id="ef-home-power" hx-swap-oob="true" class="ef-node-label" data-testid="ef-home-power">{{ state.home_power_display() }} W</span>
+<span id="ef-battery-power" hx-swap-oob="true" class="ef-node-label" data-testid="ef-battery-power" data-power="{{ state.battery_path.power_display() }}" data-direction="{{ state.battery_path.direction.css_class() }}">{{ state.battery_power_abs_display() }} W</span>
+<span id="ef-ev-power" hx-swap-oob="true" class="ef-node-label" data-testid="ef-ev-power" data-power="{{ state.ev_path.power_display() }}">{{ state.ev_power_display() }} W</span>
+<span id="ef-pv-path-power" hx-swap-oob="true" class="ef-hidden" data-power="{{ state.pv_path.power_display() }}" data-duration="{{ state.pv_path.duration_ms }}"></span>
+<span id="ef-grid-path-power" hx-swap-oob="true" class="ef-hidden" data-power="{{ state.grid_path.power_display() }}" data-duration="{{ state.grid_path.duration_ms }}" data-direction="{{ state.grid_path.direction.css_class() }}"></span>
+<span id="ef-battery-path-power" hx-swap-oob="true" class="ef-hidden" data-power="{{ state.battery_path.power_display() }}" data-duration="{{ state.battery_path.duration_ms }}" data-direction="{{ state.battery_path.direction.css_class() }}"></span>
+<span id="ef-ev-path-power" hx-swap-oob="true" class="ef-hidden" data-power="{{ state.ev_path.power_display() }}" data-duration="{{ state.ev_path.duration_ms }}"></span>
+<span id="ef-pv-path-dir" hx-swap-oob="true" class="ef-hidden" data-active="{{ state.pv_path.active }}"></span>
+<span id="ef-grid-path-dir" hx-swap-oob="true" class="ef-hidden" data-active="{{ state.grid_path.active }}" data-direction="{{ state.grid_path.direction.css_class() }}"></span>
+<span id="ef-battery-path-dir" hx-swap-oob="true" class="ef-hidden" data-active="{{ state.battery_path.active }}" data-direction="{{ state.battery_path.direction.css_class() }}"></span>
+<span id="ef-ev-path-dir" hx-swap-oob="true" class="ef-hidden" data-active="{{ state.ev_path.active }}"></span>

@@ -26,6 +26,10 @@ pub struct SiteState {
     pub battery_capacity: Option<f64>,
     pub green_share_home: Option<f64>,
     pub self_sufficiency_pct: Option<f64>,
+    /// Aggregated EV charging power across all loadpoints (derived).
+    pub ev_power: Option<f64>,
+    /// Whether any loadpoint has a connected vehicle (derived).
+    pub ev_connected: bool,
 }
 
 impl SiteState {
