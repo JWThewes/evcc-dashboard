@@ -19,6 +19,7 @@ function setTheme(t){
   try{localStorage.setItem(SK,t);}catch(e){}
   setCookie(CK,t,365);
   updateToggles(t);
+  document.dispatchEvent(new CustomEvent("theme-changed",{detail:{theme:t}}));
 }
 
 function getCookie(n){
