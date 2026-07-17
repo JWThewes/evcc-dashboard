@@ -1,4 +1,5 @@
 pub mod charts;
+pub mod compare;
 pub mod dashboard;
 pub mod health;
 pub mod login;

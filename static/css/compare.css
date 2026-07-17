@@ -1,0 +1,216 @@
+/* Compare view styles — comparison-feature unit
+ * Consumes contract-css-tokens from foundation unit.
+ */
+
+.compare-view {
+    padding: var(--space-4) var(--space-3);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.compare-header {
+    margin-bottom: var(--space-4);
+}
+
+.compare-title {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0;
+}
+
+/* Window Selector */
+.compare-window-selector {
+    display: flex;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+    background: var(--color-surface-secondary);
+    border-radius: var(--radius-md);
+    padding: var(--space-1);
+}
+
+.compare-window-btn {
+    flex: 1;
+    padding: var(--space-2) var(--space-3);
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 150ms, color 150ms;
+    min-height: 44px;
+}
+
+.compare-window-btn:hover {
+    color: var(--color-text-primary);
+}
+
+.compare-window-btn.active {
+    background: var(--color-surface-primary);
+    color: var(--color-text-primary);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Comparison Table */
+.compare-table-container {
+    margin-bottom: var(--space-4);
+    overflow-x: auto;
+}
+
+.compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-size-sm);
+}
+
+.compare-table th {
+    text-align: left;
+    padding: var(--space-2) var(--space-3);
+    color: var(--color-text-secondary);
+    font-weight: 500;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.compare-table td {
+    padding: var(--space-3);
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-primary);
+}
+
+.compare-table tbody tr {
+    transition: opacity 200ms;
+}
+
+.compare-table .compare-metric-label {
+    font-weight: 500;
+}
+
+.compare-table .compare-value {
+    font-variant-numeric: tabular-nums;
+}
+
+.compare-table .compare-delta {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.compare-delta.positive {
+    color: var(--color-positive);
+}
+
+.compare-delta.negative {
+    color: var(--color-negative);
+}
+
+.compare-delta.neutral {
+    color: var(--color-text-secondary);
+}
+
+.compare-loading {
+    text-align: center;
+    color: var(--color-text-secondary);
+    padding: var(--space-6) var(--space-3);
+}
+
+/* Chart Controls */
+.compare-chart-controls {
+    margin-bottom: var(--space-3);
+}
+
+.compare-chart-toggle {
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-secondary);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    min-height: 44px;
+    transition: background-color 150ms;
+}
+
+.compare-chart-toggle:hover {
+    background: var(--color-surface-primary);
+}
+
+.compare-chart-toggle[aria-pressed="true"] {
+    background: var(--color-accent);
+    color: var(--color-text-on-accent);
+    border-color: var(--color-accent);
+}
+
+/* Chart Section */
+.compare-chart-section {
+    margin-bottom: var(--space-4);
+}
+
+.compare-chart-section.hidden {
+    display: none;
+}
+
+.compare-metric-selector {
+    display: flex;
+    gap: var(--space-1);
+    margin-bottom: var(--space-3);
+    flex-wrap: wrap;
+}
+
+.compare-metric-btn {
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+    cursor: pointer;
+    min-height: 36px;
+    transition: background-color 150ms, color 150ms;
+}
+
+.compare-metric-btn:hover {
+    color: var(--color-text-primary);
+}
+
+.compare-metric-btn.active {
+    background: var(--color-surface-primary);
+    color: var(--color-text-primary);
+    border-color: var(--color-accent);
+}
+
+.compare-chart {
+    width: 100%;
+    height: 300px;
+    border-radius: var(--radius-md);
+    background: var(--color-surface-secondary);
+}
+
+/* Insufficient Data */
+.compare-insufficient {
+    text-align: center;
+    padding: var(--space-6);
+    color: var(--color-text-secondary);
+    background: var(--color-surface-secondary);
+    border-radius: var(--radius-md);
+}
+
+.compare-insufficient.hidden {
+    display: none;
+}
+
+/* Responsive: hide Previous column on narrow viewports */
+@media (max-width: 480px) {
+    .compare-col-previous,
+    .compare-table td:nth-child(3) {
+        display: none;
+    }
+
+    .compare-chart {
+        height: 200px;
+    }
+
+    .compare-window-selector {
+        gap: var(--space-1);
+    }
+}
