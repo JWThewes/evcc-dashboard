@@ -1,0 +1,152 @@
+/* Energy Flow Visualization — CSS
+   Owner: live-data-energy-flow unit
+   Namespace: .ef- prefix
+   GPU-composited animations only (offset-distance, opacity, transform) */
+
+/* Container */
+.ef-container {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: var(--space-4);
+}
+
+/* Hero metric */
+.ef-hero {
+  text-align: center;
+  margin-bottom: var(--space-4);
+}
+
+.ef-hero-value {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-positive);
+  line-height: var(--line-height-tight);
+}
+
+.ef-hero-unit {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-positive);
+}
+
+.ef-hero-label {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-1);
+}
+
+/* SVG viewport */
+.ef-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Path lines */
+.ef-path-line {
+  fill: none;
+  stroke: var(--color-text-muted);
+  opacity: 0.3;
+  transition: opacity var(--duration-normal) var(--easing-default);
+}
+
+.ef-path-line.ef-dir-forward,
+.ef-path-line.ef-dir-reverse {
+  opacity: 0.6;
+}
+
+.ef-path-line--pv { stroke: var(--color-solar); }
+.ef-path-line--grid { stroke: var(--color-grid); }
+.ef-path-line--battery { stroke: var(--color-battery); }
+.ef-path-line--ev { stroke: var(--color-ev); }
+
+/* Particles */
+.ef-particle {
+  will-change: transform;
+  opacity: 0.9;
+}
+
+.ef-particle--pv { fill: var(--color-solar); }
+.ef-particle--grid { fill: var(--color-grid); }
+.ef-particle--battery { fill: var(--color-battery); }
+.ef-particle--ev { fill: var(--color-ev); }
+
+.ef-particle--2,
+.ef-particle--3 {
+  opacity: 0.6;
+}
+
+/* Node styling */
+.ef-node-bg {
+  fill: var(--color-surface-2);
+  stroke: var(--color-surface-3);
+  stroke-width: 2;
+}
+
+.ef-node-bg--home {
+  fill: var(--color-surface-1);
+  stroke-width: 3;
+}
+
+.ef-node--pv { color: var(--color-solar); }
+.ef-node--grid { color: var(--color-grid); }
+.ef-node--home { color: var(--color-home); }
+.ef-node--battery { color: var(--color-battery); }
+.ef-node--ev { color: var(--color-ev); }
+
+.ef-node-label {
+  display: block;
+  text-align: center;
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+/* Static arrows for reduced-motion */
+.ef-arrow {
+  display: none;
+  fill: currentColor;
+  opacity: 0.7;
+}
+
+.ef-arrow--pv { color: var(--color-solar); }
+.ef-arrow--grid { color: var(--color-grid); }
+.ef-arrow--battery { color: var(--color-battery); }
+.ef-arrow--ev { color: var(--color-ev); }
+
+.ef-arrow--reverse {
+  transform: rotate(180deg);
+  transform-origin: center;
+}
+
+/* Hidden utility */
+.ef-hidden {
+  display: none !important;
+}
+
+/* Direction classes for path lines */
+.ef-dir-idle {
+  opacity: 0.2;
+}
+
+/* ========================================
+   Reduced motion: disable all animations,
+   show static directional arrows instead
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+  .ef-particle {
+    display: none !important;
+  }
+
+  .ef-arrow {
+    display: block;
+  }
+
+  .ef-path-line {
+    transition: none;
+  }
+}
