@@ -1,4 +1,57 @@
-<div class="view-placeholder" data-testid="view-compare">
-    <h2>Compare</h2>
-    <p>Period-over-period comparison coming soon</p>
+<div class="compare-view" data-testid="view-compare">
+    <header class="compare-header">
+        <h2 class="compare-title">Period Comparison</h2>
+    </header>
+
+    <!-- Window Selector -->
+    <div class="compare-window-selector" role="tablist" aria-label="Comparison window" data-testid="compare-window-selector">
+        <button role="tab" aria-selected="true" data-window="day" class="compare-window-btn active" data-testid="compare-window-day">Day</button>
+        <button role="tab" aria-selected="false" data-window="week" class="compare-window-btn" data-testid="compare-window-week">Week</button>
+        <button role="tab" aria-selected="false" data-window="month" class="compare-window-btn" data-testid="compare-window-month">Month</button>
+    </div>
+
+    <!-- Comparison Table -->
+    <div class="compare-table-container" aria-live="polite" data-testid="compare-table-container">
+        <table class="compare-table" data-testid="compare-table">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Current</th>
+                    <th class="compare-col-previous">Previous</th>
+                    <th>Change</th>
+                </tr>
+            </thead>
+            <tbody id="compare-table-body" data-testid="compare-table-body">
+                <tr>
+                    <td colspan="4" class="compare-loading">Loading...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Chart Toggle -->
+    <div class="compare-chart-controls">
+        <button class="compare-chart-toggle" data-testid="compare-chart-toggle" aria-pressed="false">
+            Show Chart
+        </button>
+    </div>
+
+    <!-- Chart Section (hidden by default) -->
+    <div class="compare-chart-section hidden" data-testid="compare-chart-section">
+        <!-- Metric Selector -->
+        <div class="compare-metric-selector" role="tablist" aria-label="Chart metric" data-testid="compare-metric-selector">
+            <button role="tab" aria-selected="true" data-metric="solar" class="compare-metric-btn active" data-testid="compare-metric-solar">Solar</button>
+            <button role="tab" aria-selected="false" data-metric="consumption" class="compare-metric-btn" data-testid="compare-metric-consumption">Consumption</button>
+            <button role="tab" aria-selected="false" data-metric="grid_import" class="compare-metric-btn" data-testid="compare-metric-grid-import">Grid Import</button>
+            <button role="tab" aria-selected="false" data-metric="grid_export" class="compare-metric-btn" data-testid="compare-metric-grid-export">Grid Export</button>
+        </div>
+
+        <!-- Chart Container -->
+        <div class="compare-chart" id="compare-chart" data-testid="compare-chart" aria-label="Comparison chart"></div>
+    </div>
+
+    <!-- Insufficient Data Notice (hidden by default) -->
+    <div class="compare-insufficient hidden" data-testid="compare-insufficient" role="alert">
+        <p>Insufficient data for comparison. Data collection may still be in progress.</p>
+    </div>
 </div>

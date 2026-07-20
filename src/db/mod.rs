@@ -1,3 +1,4 @@
+pub mod compare;
 pub mod downsample;
 pub mod insert;
 pub mod query;
