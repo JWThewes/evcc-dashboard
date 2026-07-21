@@ -1,4 +1,49 @@
-<div class="view-placeholder" data-testid="view-charging">
-    <h2>Charging</h2>
-    <p>Loadpoint and charging session details coming soon</p>
-</div>
+<section class="view-charging" data-testid="view-charging" aria-label="Charging status">
+    <h2 class="view-title">Charging</h2>
+
+    <div id="charging-cards-container"
+         class="loadpoint-cards"
+         data-testid="charging-cards"
+         hx-get="{{ base_path }}/partials/charging-cards"
+         hx-trigger="every 3s"
+         hx-swap="innerHTML"
+         aria-live="polite"
+         aria-label="Loadpoint status">
+        {% if loadpoints.is_empty() %}
+        <div class="empty-state" data-testid="charging-empty">
+            <p>No loadpoints configured</p>
+        </div>
+        {% else %}
+            {% for lp in loadpoints %}
+            <article class="loadpoint-card {{ lp.state.css_class() }}" data-testid="loadpoint-card-{{ lp.id }}">
+                <header class="lp-header">
+                    <h3 class="lp-title">{{ lp.title }}</h3>
+                    <span class="lp-status" data-testid="lp-status-{{ lp.id }}">{{ lp.state.status_text() }}</span>
+                </header>
+                <div class="lp-metrics">
+                    <div class="lp-metric" data-testid="lp-power-{{ lp.id }}">
+                        <span class="lp-metric-label">Power</span>
+                        <span class="lp-metric-value" aria-live="polite">{{ lp.power_display }}</span>
+                    </div>
+                    <div class="lp-metric" data-testid="lp-energy-{{ lp.id }}">
+                        <span class="lp-metric-label">Session</span>
+                        <span class="lp-metric-value">{{ lp.session_energy_display }}</span>
+                    </div>
+                    <div class="lp-metric" data-testid="lp-mode-{{ lp.id }}">
+                        <span class="lp-metric-label">Mode</span>
+                        <span class="lp-metric-value">{{ lp.mode }}</span>
+                    </div>
+                </div>
+                {% if let Some(ref soc) = lp.vehicle_soc %}
+                <div class="lp-vehicle" data-testid="lp-vehicle-{{ lp.id }}">
+                    {% if let Some(ref name) = lp.vehicle_name %}
+                    <span class="lp-vehicle-name">{{ name }}</span>
+                    {% endif %}
+                    <span class="lp-vehicle-soc">{{ soc }}</span>
+                </div>
+                {% endif %}
+            </article>
+            {% endfor %}
+        {% endif %}
+    </div>
+</section>

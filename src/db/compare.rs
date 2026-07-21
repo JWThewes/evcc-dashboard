@@ -266,6 +266,7 @@ pub fn query_period_chart(
 }
 
 /// Shared contract: query_yesterday_comparison
+/// (contract-yesterday-comparison-query)
 /// Returns per-metric delta percentages comparing today's elapsed energy
 /// against the same elapsed time yesterday.
 /// Consumed by the views unit for Overview summary card delta indicators.
@@ -308,6 +309,10 @@ pub fn query_yesterday_comparison(
     let (yest_pv, yest_home, yest_import, yest_export) =
         query_totals(yesterday_start, yesterday_end)?;
 
+    // EV charging deltas (from views unit intent)
+    let today_ev = query_ev_charging(conn, today_start, now, interval_seconds)?;
+    let yest_ev = query_ev_charging(conn, yesterday_start, yesterday_end, interval_seconds)?;
+
     let compute_delta = |current: f64, previous: f64| -> f64 {
         if previous > 0.0 {
             ((current - previous) / previous) * 100.0
@@ -323,6 +328,7 @@ pub fn query_yesterday_comparison(
         ("consumption", today_home * factor, yest_home * factor),
         ("grid_import", today_import * factor, yest_import * factor),
         ("grid_export", today_export * factor, yest_export * factor),
+        ("ev_charging", today_ev, yest_ev),
     ];
 
     Ok(metrics
