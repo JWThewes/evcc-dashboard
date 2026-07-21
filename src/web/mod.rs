@@ -64,6 +64,14 @@ pub fn build_router(state: AppState) -> Router {
             "/api/chart/loadpoint/{id}",
             get(routes::charts::loadpoint_history),
         )
+        .route(
+            "/api/compare/summary",
+            get(routes::compare::handle_compare_summary),
+        )
+        .route(
+            "/api/compare/chart",
+            get(routes::compare::handle_compare_chart),
+        )
         .layer(axum_mw::from_fn_with_state(
             state.clone(),
             middleware::require_login,
