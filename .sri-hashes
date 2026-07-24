@@ -1,0 +1,5 @@
+# SRI Hashes — Foundation Assets
+# Generated at build/vendor time. Verified by CI (scripts/validate-foundation.sh).
+# Format: <algorithm>-<hash> <file-path>
+
+sha384-01awMgY2Qxoo57dFZwehcB4wqi9TunC6fiF9hpPaDsLu+ayOG+WvoatvgPWquZh8 static/js/idiomorph.min.js

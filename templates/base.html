@@ -7,12 +7,21 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <!-- Design system (load before app.css for correct cascade) -->
+    <link rel="stylesheet" href="{{ base_path }}/static/css/tokens.css">
+    <link rel="stylesheet" href="{{ base_path }}/static/css/animations.css">
+    <!-- Application styles -->
     <link rel="stylesheet" href="{{ base_path }}/static/css/app.css">
+    <!-- Runtime: htmx -> idiomorph -> echarts -> app JS -->
     <script src="{{ base_path }}/static/js/htmx.min.js" defer></script>
+    <script src="{{ base_path }}/static/js/idiomorph.min.js"
+            defer
+            integrity="sha384-01awMgY2Qxoo57dFZwehcB4wqi9TunC6fiF9hpPaDsLu+ayOG+WvoatvgPWquZh8"
+            crossorigin="anonymous"></script>
     <script src="{{ base_path }}/static/js/echarts.min.js" defer></script>
     <script src="{{ base_path }}/static/js/charts.js" defer></script>
 </head>
-<body>
+<body hx-ext="morph">
     <nav class="navbar">
         <div class="navbar-brand">
             <a href="{{ base_path }}/">evcc Dashboard</a>
