@@ -1,0 +1,172 @@
+/* ============================================
+   ANIMATION SYSTEM — evcc Dashboard
+   All keyframes use ONLY compositor-safe properties:
+   - transform (translate, scale, rotate)
+   - opacity
+   - stroke-dashoffset
+   This guarantees 60fps on wall-tablet hardware.
+   ============================================ */
+
+/* === Keyframe Definitions === */
+
+/* Continuous flow animation for SVG energy paths */
+@keyframes flow-pulse {
+  from {
+    stroke-dashoffset: 24;
+    opacity: 0.7;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+/* Element entrance: fade in from below */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Element exit: fade out upward */
+@keyframes fade-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+/* Lift element upward (card promotion) */
+@keyframes lift-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scale in from slightly smaller (modal/tooltip entrance) */
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Subtle glow pulse (promoted card emphasis) */
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Continuous rotation (loading spinner) */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Skeleton loading shimmer */
+@keyframes shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* === Utility Classes (Public API for templates) === */
+
+.anim-fade-in {
+  animation: fade-in var(--anim-duration-normal) var(--anim-ease-out) both;
+}
+
+.anim-fade-out {
+  animation: fade-out var(--anim-duration-normal) var(--anim-ease-out) both;
+}
+
+.anim-lift {
+  animation: lift-up var(--anim-duration-normal) var(--anim-ease-out) both;
+}
+
+.anim-scale-in {
+  animation: scale-in var(--anim-duration-normal) var(--anim-ease-out) both;
+}
+
+.anim-pulse {
+  animation: pulse-glow var(--anim-duration-slow) var(--anim-ease-linear) infinite;
+}
+
+.anim-spin {
+  animation: spin 1s var(--anim-ease-linear) infinite;
+}
+
+/* === Flow Animation Utilities (for SVG paths) === */
+
+.flow-path--animated {
+  animation: flow-pulse var(--anim-duration-flow) var(--anim-ease-linear) infinite;
+  stroke-dasharray: 8 16;
+}
+
+/* === Compositor Layer Promotion Helpers === */
+
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+/* === Transition Utilities === */
+
+.transition-fast {
+  transition: transform var(--anim-duration-fast) var(--anim-ease-out),
+              opacity var(--anim-duration-fast) var(--anim-ease-out);
+}
+
+.transition-normal {
+  transition: transform var(--anim-duration-normal) var(--anim-ease-out),
+              opacity var(--anim-duration-normal) var(--anim-ease-out);
+}
+
+.transition-slow {
+  transition: transform var(--anim-duration-slow) var(--anim-ease-out),
+              opacity var(--anim-duration-slow) var(--anim-ease-out);
+}
+
+/* === Reduced Motion Override === */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
