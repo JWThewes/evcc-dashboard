@@ -1,66 +1,160 @@
 <div class="cards-grid" id="cards-content" data-testid="cards-zone">
-    <!-- Energy Flow Card -->
-    <div class="cards-grid__item" data-testid="card-energy-flow">
-        <h3 class="cards-grid__title">Energy Flow</h3>
-        <div class="cards-grid__body">
-            <div class="cards-grid__stat">
-                <span class="cards-grid__label">Grid</span>
-                <span class="cards-grid__value {{ site.grid_css_class() }}">{{ site.grid_power_display() }} W</span>
-            </div>
-            <div class="cards-grid__stat">
-                <span class="cards-grid__label">PV</span>
-                <span class="cards-grid__value production">{{ site.pv_power_display() }} W</span>
-            </div>
-            <div class="cards-grid__stat">
-                <span class="cards-grid__label">Home</span>
-                <span class="cards-grid__value consumption">{{ site.home_power_display() }} W</span>
-            </div>
-        </div>
+    <!-- Disconnect Banner (hidden by default) -->
+    <div id="disconnect-banner" class="disconnect-banner" hidden
+         data-testid="disconnect-banner">
+        Connection lost — showing last known values
     </div>
 
+    <!-- Energy Flow Card -->
+    <article class="card card--dormant card--hoverable"
+             data-card-id="energy-flow"
+             data-activity="{{ site.grid_activity_flag() }}"
+             data-testid="card-energy-flow">
+        <header class="card__header">
+            <h3 class="card__title">Energy Flow</h3>
+            <span class="freshness-badge" hidden data-testid="freshness-badge-energy-flow">Data may be stale</span>
+            <button class="card__expand-btn"
+                    aria-expanded="false"
+                    aria-label="Show energy flow details"
+                    data-testid="expand-energy-flow">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <polyline points="4,6 8,10 12,6"/>
+                </svg>
+            </button>
+        </header>
+        <div class="card__body">
+            <div class="card__stat">
+                <span class="card__label">Grid</span>
+                <span class="card__value {{ site.grid_css_class() }}"
+                      data-animate-value
+                      data-value-suffix=" W"
+                      data-value-decimals="0"
+                      data-testid="value-grid-power">{{ site.grid_power_display() }}</span>
+            </div>
+            <div class="card__stat">
+                <span class="card__label">PV</span>
+                <span class="card__value production"
+                      data-animate-value
+                      data-value-suffix=" W"
+                      data-value-decimals="0"
+                      data-testid="value-pv-power">{{ site.pv_power_display() }}</span>
+            </div>
+            <div class="card__stat">
+                <span class="card__label">Home</span>
+                <span class="card__value consumption"
+                      data-animate-value
+                      data-value-suffix=" W"
+                      data-value-decimals="0"
+                      data-testid="value-home-power">{{ site.home_power_display() }}</span>
+            </div>
+        </div>
+        <div class="card__detail" style="max-height: 0; opacity: 0; overflow: hidden;">
+            <div class="card__stat">
+                <span class="card__label">Direction</span>
+                <span class="card__value">{{ site.grid_direction() }}</span>
+            </div>
+        </div>
+    </article>
+
     <!-- Battery Card -->
-    <div class="cards-grid__item" data-testid="card-battery">
-        <h3 class="cards-grid__title">Battery</h3>
-        <div class="cards-grid__body">
+    <article class="card card--dormant card--hoverable"
+             data-card-id="battery"
+             data-activity="{{ site.battery_activity_flag() }}"
+             data-testid="card-battery">
+        <header class="card__header">
+            <h3 class="card__title">Battery</h3>
+            <span class="freshness-badge" hidden data-testid="freshness-badge-battery">Data may be stale</span>
+            <button class="card__expand-btn"
+                    aria-expanded="false"
+                    aria-label="Show battery details"
+                    data-testid="expand-battery">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <polyline points="4,6 8,10 12,6"/>
+                </svg>
+            </button>
+        </header>
+        <div class="card__body">
             <div class="battery-gauge">
                 <div class="battery-gauge-fill {{ site.battery_gauge_class() }}"
                      style="width: {{ site.battery_soc_display() }}%"></div>
             </div>
-            <div class="cards-grid__stat">
-                <span class="cards-grid__label">SoC</span>
-                <span class="cards-grid__value">{{ site.battery_soc_display() }}%</span>
+            <div class="card__stat">
+                <span class="card__label">SoC</span>
+                <span class="card__value"
+                      data-animate-value
+                      data-value-suffix="%"
+                      data-value-decimals="0"
+                      data-testid="value-battery-soc">{{ site.battery_soc_display() }}</span>
             </div>
-            <div class="cards-grid__stat">
-                <span class="cards-grid__label">Power</span>
-                <span class="cards-grid__value {{ site.battery_css_class() }}">{{ site.battery_power_display() }} W {{ site.battery_status_text() }}</span>
+            <div class="card__stat">
+                <span class="card__label">Power</span>
+                <span class="card__value {{ site.battery_css_class() }}"
+                      data-animate-value
+                      data-value-suffix=" W"
+                      data-value-decimals="0"
+                      data-testid="value-battery-power">{{ site.battery_power_display() }}</span>
             </div>
         </div>
-    </div>
+        <div class="card__detail" style="max-height: 0; opacity: 0; overflow: hidden;">
+            <div class="card__stat">
+                <span class="card__label">Status</span>
+                <span class="card__value">{{ site.battery_status_text() }}</span>
+            </div>
+        </div>
+    </article>
 
     <!-- Loadpoint Cards -->
     {% for lp in loadpoints %}
-    <div class="cards-grid__item" data-testid="card-loadpoint-{{ lp.id }}">
-        <h3 class="cards-grid__title">{{ lp.title_display() }}</h3>
-        <div class="cards-grid__body">
-            <div class="cards-grid__stat">
-                <span class="cards-grid__label">Status</span>
-                <span class="cards-grid__value">{% if lp.is_connected() %}Connected{% else %}Disconnected{% endif %}</span>
+    <article class="card card--dormant card--hoverable"
+             data-card-id="loadpoint-{{ lp.id }}"
+             data-activity="{{ lp.activity_flag() }}"
+             data-testid="card-loadpoint-{{ lp.id }}">
+        <header class="card__header">
+            <h3 class="card__title">{{ lp.title_display() }}</h3>
+            <span class="freshness-badge" hidden>Data may be stale</span>
+            <button class="card__expand-btn"
+                    aria-expanded="false"
+                    aria-label="Show {{ lp.title_display() }} details"
+                    data-testid="expand-loadpoint-{{ lp.id }}">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <polyline points="4,6 8,10 12,6"/>
+                </svg>
+            </button>
+        </header>
+        <div class="card__body">
+            <div class="card__stat">
+                <span class="card__label">Status</span>
+                <span class="card__value">{% if lp.is_connected() %}Connected{% else %}Disconnected{% endif %}</span>
             </div>
-            <div class="cards-grid__stat">
-                <span class="cards-grid__label">Power</span>
-                <span class="cards-grid__value">{{ lp.charge_power_display() }} W</span>
+            <div class="card__stat">
+                <span class="card__label">Power</span>
+                <span class="card__value"
+                      data-animate-value
+                      data-value-suffix=" W"
+                      data-value-decimals="0"
+                      data-testid="value-loadpoint-{{ lp.id }}-power">{{ lp.charge_power_display() }}</span>
             </div>
             {% if lp.has_vehicle() %}
-            <div class="cards-grid__stat">
-                <span class="cards-grid__label">{{ lp.vehicle_name_display() }}</span>
-                <span class="cards-grid__value">{{ lp.vehicle_soc_display() }}% · {{ lp.vehicle_range_display() }} km</span>
+            <div class="card__stat">
+                <span class="card__label">{{ lp.vehicle_name_display() }}</span>
+                <span class="card__value"
+                      data-animate-value
+                      data-value-suffix="%"
+                      data-value-decimals="0"
+                      data-testid="value-loadpoint-{{ lp.id }}-soc">{{ lp.vehicle_soc_display() }}</span>
             </div>
             {% endif %}
-            <div class="cards-grid__stat">
-                <span class="cards-grid__label">Mode</span>
-                <span class="cards-grid__value">{{ lp.mode_display() }}</span>
+        </div>
+        <div class="card__detail" style="max-height: 0; opacity: 0; overflow: hidden;">
+            <div class="card__stat">
+                <span class="card__label">Mode</span>
+                <span class="card__value">{{ lp.mode_display() }}</span>
+            </div>
+            <div class="card__stat">
+                <span class="card__label">Energy</span>
+                <span class="card__value">{{ lp.charged_energy_display() }}</span>
             </div>
         </div>
-    </div>
+    </article>
     {% endfor %}
 </div>

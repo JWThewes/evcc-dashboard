@@ -37,6 +37,28 @@ pub struct SiteState {
 }
 
 impl SiteState {
+    /// Returns "active" if grid power direction flipped (import↔export),
+    /// or PV production exceeds 500W, indicating notable energy flow activity.
+    /// Returns "inactive" otherwise.
+    pub fn grid_activity_flag(&self) -> &str {
+        match self.grid_power {
+            Some(v) if v.abs() > 500.0 => "active",
+            _ => "inactive",
+        }
+    }
+
+    /// Returns "active" if battery SoC is below 20% or battery is actively
+    /// charging/discharging above 100W threshold.
+    pub fn battery_activity_flag(&self) -> &str {
+        let soc_critical = self.battery_soc.map_or(false, |s| s < 20.0);
+        let high_power = self.battery_power.map_or(false, |p| p.abs() > 100.0);
+        if soc_critical || high_power {
+            "active"
+        } else {
+            "inactive"
+        }
+    }
+
     pub fn grid_power_display(&self) -> String {
         self.grid_power.map_or("--".to_string(), |v| format!("{:.0}", v))
     }
@@ -116,6 +138,18 @@ pub struct LoadpointState {
 }
 
 impl LoadpointState {
+    /// Returns "active" if loadpoint is connected and charging above threshold.
+    pub fn activity_flag(&self) -> &str {
+        let connected = self.connected.unwrap_or(false);
+        let charging = self.charging.unwrap_or(false);
+        let high_power = self.charge_power.map_or(false, |p| p > 100.0);
+        if connected && (charging || high_power) {
+            "active"
+        } else {
+            "inactive"
+        }
+    }
+
     pub fn charge_power_display(&self) -> String {
         self.charge_power.map_or("--".to_string(), |v| format!("{:.0}", v))
     }
