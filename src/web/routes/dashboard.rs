@@ -159,11 +159,34 @@ pub async fn index(State(state): State<AppState>) -> Html<String> {
 #[template(path = "history.html")]
 pub struct HistoryTemplate {
     pub base_path: String,
+    pub today: String,
+    pub min_date: String,
 }
 
 pub async fn history(State(state): State<AppState>) -> Html<String> {
+    let today = chrono::Local::now().format("%Y-%m-%d").to_string();
+
+    let min_date = {
+        let pool = state.db_pool.clone();
+        tokio::task::spawn_blocking(move || {
+            let conn = pool.get().ok()?;
+            db::query::query_earliest_timestamp(&conn)
+        })
+        .await
+        .ok()
+        .flatten()
+        .unwrap_or_else(|| {
+            // Default to 90 days ago if no data
+            (chrono::Local::now() - chrono::Duration::days(90))
+                .format("%Y-%m-%d")
+                .to_string()
+        })
+    };
+
     let tmpl = HistoryTemplate {
         base_path: state.config.server.base_path.clone(),
+        today,
+        min_date,
     };
     Html(tmpl.render().unwrap_or_else(|e| format!("Template error: {e}")))
 }
