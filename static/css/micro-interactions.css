@@ -1,0 +1,74 @@
+/* micro-interactions.css — Hover effects, skeleton loading, value transitions
+ * Cascade position: tokens.css → animations.css → layout.css → micro-interactions.css
+ * BEM naming per dec-per-component-css-files
+ */
+
+/* ==========================================================================
+   Hover Lift Effect — Compositor-safe translateY
+   Gated by @media (hover: hover) to avoid sticky hover on touch devices
+   ========================================================================== */
+
+@media (hover: hover) {
+  .card--hoverable:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--glass-border-hover);
+  }
+
+  /* No hover on expanded cards (already visually distinct) */
+  .card--expanded.card--hoverable:hover {
+    transform: none;
+    box-shadow: var(--shadow-sm);
+    border-color: var(--glass-border);
+  }
+}
+
+/* ==========================================================================
+   Skeleton Loading — First-load shimmer placeholders
+   ========================================================================== */
+
+.skeleton-placeholder {
+  position: relative;
+  overflow: hidden;
+  color: transparent !important;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-sm);
+  min-width: 3em;
+  display: inline-block;
+}
+
+.skeleton-placeholder::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 100%
+  );
+  animation: shimmer 1.5s var(--anim-ease-linear) infinite;
+}
+
+/* ==========================================================================
+   Value Transition — Subtle flash on value change
+   ========================================================================== */
+
+.card__value[data-animate-value] {
+  transition: color var(--anim-duration-fast) var(--anim-ease-out);
+}
+
+/* ==========================================================================
+   Reduced Motion
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .card--hoverable:hover {
+    transform: none;
+  }
+
+  .skeleton-placeholder::after {
+    animation: none;
+    background: rgba(255, 255, 255, 0.04);
+  }
+}
