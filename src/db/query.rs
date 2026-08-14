@@ -2,6 +2,7 @@ use rusqlite::{params, Connection};
 use std::collections::HashMap;
 
 use crate::model::ChartData;
+use crate::web::state::PeakCache;
 
 pub fn query_power_history(
     conn: &Connection,
@@ -317,4 +318,31 @@ fn resolve_table_and_grouping(resolution: &str) -> (&'static str, i64) {
         "1h" => ("energy_samples_1m", 3600),
         _ => ("energy_samples", 60),
     }
+}
+
+/// Query 7-day peak absolute power values per energy path.
+/// Returns the maximum absolute value for each column over the last 7 days.
+pub fn query_7d_peak_powers(conn: &Connection) -> anyhow::Result<PeakCache> {
+    let seven_days_ago = chrono::Utc::now().timestamp() - (7 * 24 * 3600);
+
+    let mut stmt = conn.prepare(
+        "SELECT
+            COALESCE(MAX(ABS(grid_power)), 0.0),
+            COALESCE(MAX(ABS(pv_power)), 0.0),
+            COALESCE(MAX(ABS(battery_power)), 0.0),
+            COALESCE(MAX(ABS(home_power)), 0.0)
+         FROM energy_samples
+         WHERE timestamp >= ?1",
+    )?;
+
+    stmt.query_row(params![seven_days_ago], |row| {
+        Ok(PeakCache {
+            grid_peak: row.get(0)?,
+            pv_peak: row.get(1)?,
+            battery_peak: row.get(2)?,
+            home_peak: row.get(3)?,
+            last_refreshed: Some(chrono::Utc::now().timestamp()),
+        })
+    })
+    .map_err(Into::into)
 }

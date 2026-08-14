@@ -1,25 +1,118 @@
-<div class="schematic-placeholder" id="schematic-content" data-testid="schematic-zone">
-    <h2 class="schematic-placeholder__title">Energy Flow</h2>
-    <div class="schematic-placeholder__grid">
-        <div class="schematic-placeholder__item" data-testid="schematic-pv">
-            <span class="schematic-placeholder__label">Solar</span>
-            <span class="schematic-placeholder__value production">{{ site.pv_power_display() }} W</span>
-        </div>
-        <div class="schematic-placeholder__item" data-testid="schematic-grid">
-            <span class="schematic-placeholder__label">Grid</span>
-            <span class="schematic-placeholder__value {{ site.grid_css_class() }}">{{ site.grid_direction() }}</span>
-        </div>
-        <div class="schematic-placeholder__item" data-testid="schematic-home">
-            <span class="schematic-placeholder__label">Home</span>
-            <span class="schematic-placeholder__value consumption">{{ site.home_power_display() }} W</span>
-        </div>
-        {% match site.battery_power %}
-            {% when Some with (_val) %}
-        <div class="schematic-placeholder__item" data-testid="schematic-battery">
-            <span class="schematic-placeholder__label">Battery</span>
-            <span class="schematic-placeholder__value {{ site.battery_css_class() }}">{{ site.battery_power_display() }} W ({{ site.battery_soc_display() }}%)</span>
-        </div>
-            {% when None %}
+<div class="schematic" id="schematic-content"
+     data-stale="{{ stale }}"
+     data-testid="schematic-zone"
+     role="img"
+     aria-label="Energy flow diagram showing power distribution between solar, grid, battery, EV, and home">
+
+  <svg class="schematic__svg" viewBox="0 0 400 400"
+       xmlns="http://www.w3.org/2000/svg"
+       aria-hidden="true">
+
+    <!-- Defs: arrow markers for reduced-motion fallback and icon symbols -->
+    <defs>
+      <marker id="arrow-import" viewBox="0 0 10 10" refX="8" refY="5"
+              markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
+      </marker>
+      <marker id="arrow-export" viewBox="0 0 10 10" refX="8" refY="5"
+              markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
+      </marker>
+
+      <!-- Icon: Solar (sun with rays) -->
+      <symbol id="icon-solar" viewBox="-12 -12 24 24">
+        <circle r="5" fill="none" stroke="currentColor" stroke-width="1.5" />
+        <line x1="0" y1="-9" x2="0" y2="-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        <line x1="0" y1="7" x2="0" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        <line x1="-9" y1="0" x2="-7" y2="0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        <line x1="7" y1="0" x2="9" y2="0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        <line x1="-6.4" y1="-6.4" x2="-5" y2="-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        <line x1="5" y1="-5" x2="6.4" y2="-6.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        <line x1="-6.4" y1="6.4" x2="-5" y2="5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        <line x1="5" y1="5" x2="6.4" y2="6.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+      </symbol>
+
+      <!-- Icon: Grid (power tower) -->
+      <symbol id="icon-grid" viewBox="-12 -12 24 24">
+        <line x1="-4" y1="10" x2="-2" y2="-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        <line x1="4" y1="10" x2="2" y2="-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        <line x1="-8" y1="-8" x2="8" y2="-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        <line x1="-5" y1="-2" x2="5" y2="-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        <line x1="-3.5" y1="4" x2="3.5" y2="4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+      </symbol>
+
+      <!-- Icon: Battery (rectangle with segments) -->
+      <symbol id="icon-battery" viewBox="-12 -12 24 24">
+        <rect x="-8" y="-5" width="16" height="10" rx="1" fill="none" stroke="currentColor" stroke-width="1.5" />
+        <rect x="8" y="-2" width="2" height="4" rx="0.5" fill="currentColor" />
+        <rect x="-6" y="-3" width="4" height="6" fill="currentColor" opacity="0.6" />
+        <rect x="-1" y="-3" width="4" height="6" fill="currentColor" opacity="0.4" />
+      </symbol>
+
+      <!-- Icon: EV (car outline) -->
+      <symbol id="icon-ev" viewBox="-12 -12 24 24">
+        <path d="M-8 2 L-8-1 Q-8-3-6-4 L-3-4 Q-1-7 2-7 L5-7 Q8-7 8-4 L9-4 Q10-3 10-1 L10 2 Z"
+              fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+        <circle cx="-4" cy="4" r="2" fill="none" stroke="currentColor" stroke-width="1.5" />
+        <circle cx="6" cy="4" r="2" fill="none" stroke="currentColor" stroke-width="1.5" />
+        <line x1="-2" y1="2" x2="4" y2="2" stroke="currentColor" stroke-width="1" />
+      </symbol>
+
+      <!-- Icon: House (triangle roof + square body) -->
+      <symbol id="icon-house" viewBox="-12 -12 24 24">
+        <path d="M0-9 L10 0 L8 0 L8 9 L-8 9 L-8 0 L-10 0 Z"
+              fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+        <rect x="-2" y="3" width="4" height="6" fill="none" stroke="currentColor" stroke-width="1" />
+      </symbol>
+    </defs>
+
+    <!-- Flow paths (rendered before nodes so nodes layer above) -->
+    {% for node in nodes %}
+      {% if node.id != "house" %}
+        <path id="schematic-path-{{ node.id }}"
+              class="schematic__path flow-path--animated"
+              d="M {{ node.cx }} {{ node.cy }} L 200 200"
+              data-intensity="{{ node.intensity_str() }}"
+              data-direction="{{ node.direction.as_data_attr() }}"
+              data-visible="{{ node.visible }}"
+              style="--flow-intensity: {{ node.intensity_str() }};" />
+      {% endif %}
+    {% endfor %}
+
+    <!-- Nodes -->
+    {% for node in nodes %}
+      <g id="schematic-node-{{ node.id }}"
+         class="schematic__node"
+         data-visible="{{ node.visible }}"
+         data-testid="schematic-node-{{ node.id }}">
+
+        <!-- Node circle -->
+        <circle class="schematic__node-circle"
+                cx="{{ node.cx }}" cy="{{ node.cy }}" r="30" />
+
+        <!-- Node icon -->
+        <use href="#icon-{{ node.id }}"
+             class="schematic__node-icon"
+             x="{{ node.cx - 12.0 }}" y="{{ node.cy - 12.0 }}"
+             width="24" height="24" />
+
+        <!-- Node label -->
+        <text class="schematic__node-label"
+              x="{{ node.cx }}" y="{{ node.cy + 48.0 }}">{{ node.label }}</text>
+
+        <!-- Power value -->
+        {% match node.current_watts %}
+          {% when Some with (_watts) %}
+            <text class="schematic__node-value"
+                  x="{{ node.cx }}" y="{{ node.cy + 62.0 }}"
+                  data-watts="{{ node.watts_attr() }}">
+              {{ node.watts_display() }} W
+            </text>
+          {% when None %}
+            <text class="schematic__node-value"
+                  x="{{ node.cx }}" y="{{ node.cy + 62.0 }}">—</text>
         {% endmatch %}
-    </div>
+      </g>
+    {% endfor %}
+  </svg>
 </div>
