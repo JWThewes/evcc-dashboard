@@ -12,7 +12,7 @@ use tokio::net::TcpListener;
 use tokio::sync::RwLock;
 
 use crate::model::CurrentState;
-use crate::web::state::AppState;
+use crate::web::state::{AppState, PeakCache};
 
 #[derive(Parser)]
 #[command(name = "evcc-dashboard")]
@@ -70,12 +70,17 @@ async fn main() -> anyhow::Result<()> {
     ));
     tokio::spawn(tasks::spawn_daily_summary_task(db_pool.clone()));
 
+    // Peak cache for schematic intensity computation
+    let peak_cache = std::sync::Arc::new(std::sync::RwLock::new(PeakCache::default()));
+    tokio::spawn(tasks::spawn_peak_updater(db_pool.clone(), peak_cache.clone()));
+
     // Build web server
     let config = Arc::new(config);
     let state = AppState {
         config: config.clone(),
         db_pool,
         current_state,
+        peak_cache,
     };
 
     let app = web::build_router(state);

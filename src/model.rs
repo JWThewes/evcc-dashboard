@@ -10,6 +10,8 @@ pub struct CurrentState {
     pub site: SiteState,
     pub loadpoints: HashMap<u32, LoadpointState>,
     pub last_updated: Option<i64>,
+    /// Timestamp of last loadpoint data with connected=true (for EV node visibility)
+    pub ev_last_seen: Option<i64>,
 }
 
 #[derive(Debug, Clone, Default, Serialize)]
@@ -26,6 +28,12 @@ pub struct SiteState {
     pub battery_capacity: Option<f64>,
     pub green_share_home: Option<f64>,
     pub self_sufficiency_pct: Option<f64>,
+    /// Timestamp of last non-null PV power MQTT message (Unix epoch seconds)
+    pub pv_last_seen: Option<i64>,
+    /// Timestamp of last non-null grid power MQTT message
+    pub grid_last_seen: Option<i64>,
+    /// Timestamp of last non-null battery power MQTT message
+    pub battery_last_seen: Option<i64>,
 }
 
 impl SiteState {
