@@ -1,0 +1,66 @@
+<div class="cards-grid" id="cards-content" data-testid="cards-zone">
+    <!-- Energy Flow Card -->
+    <div class="cards-grid__item" data-testid="card-energy-flow">
+        <h3 class="cards-grid__title">Energy Flow</h3>
+        <div class="cards-grid__body">
+            <div class="cards-grid__stat">
+                <span class="cards-grid__label">Grid</span>
+                <span class="cards-grid__value {{ site.grid_css_class() }}">{{ site.grid_power_display() }} W</span>
+            </div>
+            <div class="cards-grid__stat">
+                <span class="cards-grid__label">PV</span>
+                <span class="cards-grid__value production">{{ site.pv_power_display() }} W</span>
+            </div>
+            <div class="cards-grid__stat">
+                <span class="cards-grid__label">Home</span>
+                <span class="cards-grid__value consumption">{{ site.home_power_display() }} W</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Battery Card -->
+    <div class="cards-grid__item" data-testid="card-battery">
+        <h3 class="cards-grid__title">Battery</h3>
+        <div class="cards-grid__body">
+            <div class="battery-gauge">
+                <div class="battery-gauge-fill {{ site.battery_gauge_class() }}"
+                     style="width: {{ site.battery_soc_display() }}%"></div>
+            </div>
+            <div class="cards-grid__stat">
+                <span class="cards-grid__label">SoC</span>
+                <span class="cards-grid__value">{{ site.battery_soc_display() }}%</span>
+            </div>
+            <div class="cards-grid__stat">
+                <span class="cards-grid__label">Power</span>
+                <span class="cards-grid__value {{ site.battery_css_class() }}">{{ site.battery_power_display() }} W {{ site.battery_status_text() }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loadpoint Cards -->
+    {% for lp in loadpoints %}
+    <div class="cards-grid__item" data-testid="card-loadpoint-{{ lp.id }}">
+        <h3 class="cards-grid__title">{{ lp.title_display() }}</h3>
+        <div class="cards-grid__body">
+            <div class="cards-grid__stat">
+                <span class="cards-grid__label">Status</span>
+                <span class="cards-grid__value">{% if lp.is_connected() %}Connected{% else %}Disconnected{% endif %}</span>
+            </div>
+            <div class="cards-grid__stat">
+                <span class="cards-grid__label">Power</span>
+                <span class="cards-grid__value">{{ lp.charge_power_display() }} W</span>
+            </div>
+            {% if lp.has_vehicle() %}
+            <div class="cards-grid__stat">
+                <span class="cards-grid__label">{{ lp.vehicle_name_display() }}</span>
+                <span class="cards-grid__value">{{ lp.vehicle_soc_display() }}% · {{ lp.vehicle_range_display() }} km</span>
+            </div>
+            {% endif %}
+            <div class="cards-grid__stat">
+                <span class="cards-grid__label">Mode</span>
+                <span class="cards-grid__value">{{ lp.mode_display() }}</span>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
