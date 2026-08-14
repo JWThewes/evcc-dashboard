@@ -7,6 +7,7 @@ use tokio::sync::mpsc;
 use crate::config::RetentionConfig;
 use crate::db;
 use crate::mqtt::subscriber::SampleBatch;
+use crate::web::state::SharedPeakCache;
 
 pub async fn spawn_db_writer(
     pool: Pool<SqliteConnectionManager>,
@@ -105,4 +106,59 @@ async fn compute_yesterday_summary(pool: &Pool<SqliteConnectionManager>) {
     })
     .await
     .ok();
+}
+
+/// Background task that refreshes the 7-day peak power cache every 5 minutes.
+/// On failure, retains stale cached values and retries on next cycle.
+pub async fn spawn_peak_updater(
+    pool: Pool<SqliteConnectionManager>,
+    peak_cache: SharedPeakCache,
+) {
+    // Initial delay to let DB accumulate some data on fresh start
+    tokio::time::sleep(Duration::from_secs(5)).await;
+
+    // Perform initial refresh
+    refresh_peak_cache(&pool, &peak_cache).await;
+
+    // Then refresh every 5 minutes
+    let mut interval = tokio::time::interval(Duration::from_secs(300));
+
+    loop {
+        interval.tick().await;
+        refresh_peak_cache(&pool, &peak_cache).await;
+    }
+}
+
+async fn refresh_peak_cache(
+    pool: &Pool<SqliteConnectionManager>,
+    peak_cache: &SharedPeakCache,
+) {
+    let pool = pool.clone();
+    let result = tokio::task::spawn_blocking(move || {
+        match pool.get() {
+            Ok(conn) => db::query::query_7d_peak_powers(&conn),
+            Err(e) => Err(anyhow::anyhow!("Failed to get DB connection: {e}")),
+        }
+    })
+    .await;
+
+    match result {
+        Ok(Ok(new_peaks)) => {
+            match peak_cache.write() {
+                Ok(mut cache) => {
+                    *cache = new_peaks;
+                    tracing::debug!("Peak cache refreshed successfully");
+                }
+                Err(e) => {
+                    tracing::error!("Failed to acquire peak cache write lock: {e}");
+                }
+            }
+        }
+        Ok(Err(e)) => {
+            tracing::warn!("Peak cache refresh query failed, retaining stale values: {e}");
+        }
+        Err(e) => {
+            tracing::warn!("Peak cache refresh task panicked: {e}");
+        }
+    }
 }

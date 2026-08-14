@@ -4,7 +4,10 @@ use axum::response::Html;
 
 use crate::db;
 use crate::model::{EnergyTotals, LoadpointState, SiteState};
-use crate::web::state::AppState;
+use crate::web::state::{
+    AppState, FlowDirection, SchematicNodeState, SchematicRenderContext,
+    compute_intensity, flow_direction, node_visible,
+};
 
 // ---------- Legacy partial endpoints (backward-compatible) ----------
 
@@ -95,18 +98,128 @@ pub async fn today_energy(State(state): State<AppState>) -> Html<String> {
 
 // ---------- New three-zone partial endpoints ----------
 
-#[derive(Template)]
-#[template(path = "partials/schematic.html")]
-pub struct SchematicPartialTemplate {
-    pub site: SiteState,
-}
-
-/// Renders the hero zone schematic placeholder partial.
+/// Renders the hero zone SVG energy-flow schematic with animated flow paths.
+/// Reads from in-memory state only — no database access on request path.
 pub async fn schematic(State(state): State<AppState>) -> Html<String> {
     let current = state.current_state.read().await;
-    let tmpl = SchematicPartialTemplate {
-        site: current.site.clone(),
+    let now = chrono::Utc::now().timestamp();
+
+    // Read peak cache (std::sync::RwLock — non-async, sub-microsecond)
+    let peaks = state
+        .peak_cache
+        .read()
+        .map(|p| p.clone())
+        .unwrap_or_default();
+
+    // Determine overall staleness (no MQTT data in last 30 seconds)
+    let stale = match current.last_updated {
+        Some(ts) => (now - ts) > 30,
+        None => true,
     };
+
+    // Radial layout positions (400×400 viewBox, house at center)
+    // Solar: top, Grid: right, Battery: bottom-right, EV: bottom-left
+    let nodes = vec![
+        // House node (always visible, no flow path)
+        SchematicNodeState {
+            id: "house",
+            label: "Home",
+            visible: true,
+            current_watts: current.site.home_power,
+            intensity: 0.0,
+            direction: FlowDirection::Idle,
+            cx: 200.0,
+            cy: 200.0,
+        },
+        // Solar node
+        {
+            let watts = current.site.pv_power;
+            let visible = node_visible(current.site.pv_last_seen, now);
+            let intensity = compute_intensity(
+                watts.unwrap_or(0.0),
+                peaks.pv_peak,
+            );
+            SchematicNodeState {
+                id: "solar",
+                label: "Solar",
+                visible,
+                current_watts: watts,
+                intensity,
+                direction: flow_direction("solar", watts),
+                cx: 200.0,
+                cy: 60.0,
+            }
+        },
+        // Grid node
+        {
+            let watts = current.site.grid_power;
+            let visible = node_visible(current.site.grid_last_seen, now);
+            let intensity = compute_intensity(
+                watts.unwrap_or(0.0),
+                peaks.grid_peak,
+            );
+            SchematicNodeState {
+                id: "grid",
+                label: "Grid",
+                visible,
+                current_watts: watts,
+                intensity,
+                direction: flow_direction("grid", watts),
+                cx: 340.0,
+                cy: 200.0,
+            }
+        },
+        // Battery node
+        {
+            let watts = current.site.battery_power;
+            let visible = node_visible(current.site.battery_last_seen, now);
+            let intensity = compute_intensity(
+                watts.unwrap_or(0.0),
+                peaks.battery_peak,
+            );
+            SchematicNodeState {
+                id: "battery",
+                label: "Battery",
+                visible,
+                current_watts: watts,
+                intensity,
+                direction: flow_direction("battery", watts),
+                cx: 310.0,
+                cy: 340.0,
+            }
+        },
+        // EV node
+        {
+            // EV power is the sum of all connected loadpoint charge powers
+            let ev_watts: Option<f64> = {
+                let total: f64 = current
+                    .loadpoints
+                    .values()
+                    .filter(|lp| lp.connected.unwrap_or(false))
+                    .filter_map(|lp| lp.charge_power)
+                    .sum();
+                if total > 0.0 { Some(total) } else { None }
+            };
+            let visible = node_visible(current.ev_last_seen, now);
+            // Use home_peak as proxy for EV peak since we don't track EV separately
+            let intensity = compute_intensity(
+                ev_watts.unwrap_or(0.0),
+                peaks.home_peak,
+            );
+            SchematicNodeState {
+                id: "ev",
+                label: "EV",
+                visible,
+                current_watts: ev_watts,
+                intensity,
+                direction: flow_direction("ev", ev_watts),
+                cx: 90.0,
+                cy: 340.0,
+            }
+        },
+    ];
+
+    let tmpl = SchematicRenderContext { nodes, stale };
     Html(tmpl.render().unwrap_or_else(|e| format!("Template error: {e}")))
 }
 

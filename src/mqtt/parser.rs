@@ -19,6 +19,7 @@ pub fn apply_message(state: &mut CurrentState, prefix: &str, topic: &str, payloa
         // Nested path format (actual evcc topics)
         "site/grid/power" => {
             state.site.grid_power = payload_str.parse().ok();
+            state.site.grid_last_seen = Some(chrono::Utc::now().timestamp());
         }
         "site/grid/energy" => {
             state.site.grid_energy = payload_str.parse().ok();
@@ -34,6 +35,7 @@ pub fn apply_message(state: &mut CurrentState, prefix: &str, topic: &str, payloa
         }
         "site/battery/power" => {
             state.site.battery_power = payload_str.parse().ok();
+            state.site.battery_last_seen = Some(chrono::Utc::now().timestamp());
         }
         "site/battery/soc" => {
             state.site.battery_soc = payload_str.parse().ok();
@@ -48,9 +50,11 @@ pub fn apply_message(state: &mut CurrentState, prefix: &str, topic: &str, payloa
         // CamelCase format (also published by evcc)
         "site/gridPower" | "site/grid/Power" => {
             state.site.grid_power = payload_str.parse().ok();
+            state.site.grid_last_seen = Some(chrono::Utc::now().timestamp());
         }
         "site/pvPower" => {
             state.site.pv_power = payload_str.parse().ok();
+            state.site.pv_last_seen = Some(chrono::Utc::now().timestamp());
         }
         "site/pvEnergy" => {
             state.site.pv_energy = payload_str.parse().ok();
@@ -60,6 +64,7 @@ pub fn apply_message(state: &mut CurrentState, prefix: &str, topic: &str, payloa
         }
         "site/batteryPower" => {
             state.site.battery_power = payload_str.parse().ok();
+            state.site.battery_last_seen = Some(chrono::Utc::now().timestamp());
         }
         "site/batterySoc" => {
             state.site.battery_soc = payload_str.parse().ok();
@@ -95,6 +100,13 @@ fn parse_loadpoint_message(state: &mut CurrentState, path: &str, value: &str) {
         Ok(id) => id,
         Err(_) => return,
     };
+
+    // Track EV connected state for schematic visibility
+    if parts[1] == "connected" {
+        if value.parse::<bool>().unwrap_or(false) {
+            state.ev_last_seen = Some(chrono::Utc::now().timestamp());
+        }
+    }
 
     let lp = state.loadpoints.entry(id).or_default();
     lp.id = id;

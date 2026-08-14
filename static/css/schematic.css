@@ -1,0 +1,208 @@
+/* ============================================
+   SCHEMATIC COMPONENT — Energy Flow SVG
+   Depends on: tokens.css, animations.css
+   Provides: .flow-path--animated (per contract-animation-class-convention)
+   ============================================ */
+
+/* === Layout === */
+.schematic {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  aspect-ratio: 1;
+}
+
+.schematic__svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* === Nodes === */
+.schematic__node {
+  transition: opacity var(--anim-duration-normal, 300ms) var(--anim-ease-out, ease-out);
+}
+
+.schematic__node[data-visible="false"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.schematic__node-circle {
+  fill: var(--color-bg-card, rgba(30, 30, 46, 0.8));
+  stroke: var(--glass-border, rgba(255, 255, 255, 0.1));
+  stroke-width: 2;
+  transition: stroke var(--anim-duration-fast, 150ms) var(--anim-ease-out, ease-out);
+}
+
+.schematic__node-icon {
+  color: var(--color-text, #cdd6f4);
+}
+
+.schematic__node-label {
+  fill: var(--color-text-secondary, #a6adc8);
+  font-family: var(--font-family-body, 'Inter', sans-serif);
+  font-size: var(--font-size-xs, 0.75rem);
+  text-anchor: middle;
+}
+
+.schematic__node-value {
+  fill: var(--color-text, #cdd6f4);
+  font-family: var(--font-family-mono, 'JetBrains Mono', monospace);
+  font-size: var(--font-size-sm, 0.875rem);
+  text-anchor: middle;
+  font-weight: var(--font-weight-medium, 500);
+}
+
+/* === Flow Paths === */
+.schematic__path {
+  fill: none;
+  stroke: var(--color-primary, #89b4fa);
+  stroke-width: 3;
+  stroke-linecap: round;
+  will-change: stroke-dashoffset, opacity;
+}
+
+.schematic__path[data-visible="false"] {
+  opacity: 0;
+}
+
+/* Animation speed driven by server-rendered --flow-intensity */
+.schematic__path.flow-path--animated {
+  stroke-dasharray: 8 16;
+  animation: flow-pulse
+    calc(var(--anim-duration-flow, 2s) / max(var(--flow-intensity, 0.5), 0.1))
+    var(--anim-ease-linear, linear) infinite;
+}
+
+/* Intensity = 0 -> paused */
+.schematic__path.flow-path--animated[data-intensity="0.00"] {
+  animation-play-state: paused;
+  opacity: 0.3;
+}
+
+/* Direction: reverse animation for export paths */
+.schematic__path[data-direction="export"] {
+  animation-direction: reverse;
+}
+
+/* Idle paths have no visible animation */
+.schematic__path[data-direction="idle"] {
+  animation-play-state: paused;
+  opacity: 0.15;
+}
+
+/* === Stale State === */
+.schematic[data-stale="true"] .schematic__path {
+  animation-play-state: paused;
+  opacity: 0.2;
+}
+
+.schematic[data-stale="true"] .schematic__node-value {
+  fill: var(--color-text-muted, #6c7086);
+}
+
+/* === Node-specific colour accents === */
+#schematic-node-solar .schematic__node-circle {
+  stroke: var(--color-warning, #f9e2af);
+}
+
+#schematic-node-solar .schematic__node-icon {
+  color: var(--color-warning, #f9e2af);
+}
+
+#schematic-node-grid .schematic__node-circle {
+  stroke: var(--color-info, #89dceb);
+}
+
+#schematic-node-grid .schematic__node-icon {
+  color: var(--color-info, #89dceb);
+}
+
+#schematic-node-battery .schematic__node-circle {
+  stroke: var(--color-success, #a6e3a1);
+}
+
+#schematic-node-battery .schematic__node-icon {
+  color: var(--color-success, #a6e3a1);
+}
+
+#schematic-node-ev .schematic__node-circle {
+  stroke: var(--color-purple, #cba6f7);
+}
+
+#schematic-node-ev .schematic__node-icon {
+  color: var(--color-purple, #cba6f7);
+}
+
+#schematic-node-house .schematic__node-circle {
+  stroke: var(--color-text, #cdd6f4);
+  stroke-width: 3;
+}
+
+#schematic-node-house .schematic__node-icon {
+  color: var(--color-text, #cdd6f4);
+}
+
+/* Path colours per source */
+#schematic-path-solar {
+  stroke: var(--color-warning, #f9e2af);
+}
+
+#schematic-path-grid {
+  stroke: var(--color-info, #89dceb);
+}
+
+#schematic-path-battery {
+  stroke: var(--color-success, #a6e3a1);
+}
+
+#schematic-path-ev {
+  stroke: var(--color-purple, #cba6f7);
+}
+
+/* === Responsive Scaling === */
+@media (max-width: 768px) {
+  .schematic {
+    max-width: 320px;
+  }
+
+  .schematic__node-label {
+    font-size: 10px;
+  }
+
+  .schematic__node-value {
+    font-size: 11px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .schematic {
+    max-width: 450px;
+  }
+}
+
+/* === Reduced Motion Override === */
+@media (prefers-reduced-motion: reduce) {
+  .schematic__path.flow-path--animated {
+    stroke-dasharray: none;
+    animation: none;
+    marker-end: url(#arrow-import);
+  }
+
+  .schematic__path.flow-path--animated[data-direction="export"] {
+    marker-end: url(#arrow-export);
+  }
+
+  .schematic__path.flow-path--animated[data-intensity="0.00"] {
+    marker-end: none;
+    opacity: 0.3;
+  }
+
+  .schematic__path[data-direction="idle"] {
+    marker-end: none;
+  }
+
+  .schematic__node {
+    transition: none;
+  }
+}
