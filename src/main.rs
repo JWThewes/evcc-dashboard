@@ -74,6 +74,9 @@ async fn main() -> anyhow::Result<()> {
     let peak_cache = std::sync::Arc::new(std::sync::RwLock::new(PeakCache::default()));
     tokio::spawn(tasks::spawn_peak_updater(db_pool.clone(), peak_cache.clone()));
 
+    // ARIA announcement deduplication state
+    let last_announcement = std::sync::Arc::new(std::sync::RwLock::new(String::new()));
+
     // Build web server
     let config = Arc::new(config);
     let state = AppState {
@@ -81,6 +84,7 @@ async fn main() -> anyhow::Result<()> {
         db_pool,
         current_state,
         peak_cache,
+        last_announcement,
     };
 
     let app = web::build_router(state);

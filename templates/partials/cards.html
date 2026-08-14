@@ -9,6 +9,7 @@
     <article class="card card--dormant card--hoverable"
              data-card-id="energy-flow"
              data-activity="{{ site.grid_activity_flag() }}"
+             aria-label="{% if site.grid_activity_flag() == "active" %}Energy Flow card — notable event: high grid activity{% else %}Energy Flow card{% endif %}"
              data-testid="card-energy-flow">
         <header class="card__header">
             <h3 class="card__title">Energy Flow</h3>
@@ -60,6 +61,7 @@
     <article class="card card--dormant card--hoverable"
              data-card-id="battery"
              data-activity="{{ site.battery_activity_flag() }}"
+             aria-label="{% if site.battery_activity_flag() == "active" %}Battery card — notable event: battery activity{% else %}Battery card{% endif %}"
              data-testid="card-battery">
         <header class="card__header">
             <h3 class="card__title">Battery</h3>
@@ -108,6 +110,7 @@
     <article class="card card--dormant card--hoverable"
              data-card-id="loadpoint-{{ lp.id }}"
              data-activity="{{ lp.activity_flag() }}"
+             aria-label="{% if lp.activity_flag() == "active" %}{{ lp.title_display() }} card — notable event: charging active{% else %}{{ lp.title_display() }} card{% endif %}"
              data-testid="card-loadpoint-{{ lp.id }}">
         <header class="card__header">
             <h3 class="card__title">{{ lp.title_display() }}</h3>

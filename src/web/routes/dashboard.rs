@@ -7,6 +7,7 @@ use crate::model::{EnergyTotals, LoadpointState, SiteState};
 use crate::web::state::{
     AppState, FlowDirection, SchematicNodeState,
     compute_intensity, flow_direction, node_visible,
+    derive_schematic_aria_label, derive_status_announcement,
 };
 
 #[derive(Template)]
@@ -19,6 +20,8 @@ pub struct DashboardTemplate {
     pub green_share: Option<f64>,
     pub nodes: Vec<SchematicNodeState>,
     pub stale: bool,
+    pub aria_label: String,
+    pub status_announcement: Option<String>,
 }
 
 pub async fn index(State(state): State<AppState>) -> Html<String> {
@@ -143,6 +146,23 @@ pub async fn index(State(state): State<AppState>) -> Html<String> {
     .await
     .unwrap_or_default();
 
+    // Compute ARIA accessibility context for initial SSR
+    let aria_label = derive_schematic_aria_label(&nodes);
+    let status_announcement = {
+        let previous = state
+            .last_announcement
+            .read()
+            .map(|s| s.clone())
+            .unwrap_or_default();
+        let announcement = derive_status_announcement(&nodes, stale, &previous);
+        if let Some(ref text) = announcement {
+            if let Ok(mut prev) = state.last_announcement.write() {
+                *prev = text.clone();
+            }
+        }
+        announcement
+    };
+
     let tmpl = DashboardTemplate {
         base_path: state.config.server.base_path.clone(),
         site,
@@ -151,6 +171,8 @@ pub async fn index(State(state): State<AppState>) -> Html<String> {
         green_share,
         nodes,
         stale,
+        aria_label,
+        status_announcement,
     };
     Html(tmpl.render().unwrap_or_else(|e| format!("Template error: {e}")))
 }
