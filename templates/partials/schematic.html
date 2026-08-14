@@ -2,7 +2,15 @@
      data-stale="{{ stale }}"
      data-testid="schematic-zone"
      role="img"
-     aria-label="Energy flow diagram showing power distribution between solar, grid, battery, EV, and home">
+     aria-label="{{ aria_label }}">
+
+  <!-- ARIA status announcement — visually hidden, screen-reader accessible -->
+  <div class="sr-only"
+       role="status"
+       aria-live="polite"
+       aria-atomic="true"
+       id="energy-status-announcement"
+       data-testid="energy-status-announcement">{% if let Some(ref text) = status_announcement %}{{ text }}{% endif %}</div>
 
   <svg class="schematic__svg" viewBox="0 0 400 400"
        xmlns="http://www.w3.org/2000/svg"
@@ -69,13 +77,28 @@
     <!-- Flow paths (rendered before nodes so nodes layer above) -->
     {% for node in nodes %}
       {% if node.id != "house" %}
-        <path id="schematic-path-{{ node.id }}"
-              class="schematic__path flow-path--animated"
-              d="M {{ node.cx }} {{ node.cy }} L 200 200"
-              data-intensity="{{ node.intensity_str() }}"
-              data-direction="{{ node.direction.as_data_attr() }}"
-              data-visible="{{ node.visible }}"
-              style="--flow-intensity: {{ node.intensity_str() }};" />
+        <!-- Flow path: animated particles + static arrow fallback -->
+        <g id="schematic-flow-{{ node.id }}" data-visible="{{ node.visible }}">
+          <!-- Animated particle group (hidden under reduced-motion by JS) -->
+          <g class="flow-path__particle-group">
+            <path id="schematic-path-{{ node.id }}"
+                  class="schematic__path flow-path--animated"
+                  d="M {{ node.cx }} {{ node.cy }} L 200 200"
+                  data-intensity="{{ node.intensity_str() }}"
+                  data-direction="{{ node.direction.as_data_attr() }}"
+                  data-visible="{{ node.visible }}"
+                  style="--flow-intensity: {{ node.intensity_str() }};" />
+          </g>
+          <!-- Static arrow group (shown under reduced-motion by JS) -->
+          <g class="flow-path__arrow-group" style="display: none;">
+            <line class="schematic__arrow-line"
+                  x1="{{ node.cx }}" y1="{{ node.cy }}"
+                  x2="200" y2="200"
+                  data-direction="{{ node.direction.as_data_attr() }}"
+                  data-visible="{{ node.visible }}"
+                  {% if node.direction.as_data_attr() == "export" %}marker-end="url(#arrow-export)"{% else %}marker-end="url(#arrow-import)"{% endif %} />
+          </g>
+        </g>
       {% endif %}
     {% endfor %}
 

@@ -17,6 +17,8 @@
     <link rel="stylesheet" href="{{ base_path }}/static/css/freshness.css">
     <link rel="stylesheet" href="{{ base_path }}/static/css/micro-interactions.css">
     <link rel="stylesheet" href="{{ base_path }}/static/css/app.css">
+    <!-- Reduced-motion overrides: LAST in cascade per contract-css-token-cascade -->
+    <link rel="stylesheet" href="{{ base_path }}/static/css/reduced-motion.css">
     <!-- Runtime: htmx → idiomorph -->
     <script src="{{ base_path }}/static/js/htmx.min.js" defer></script>
     <script src="{{ base_path }}/static/js/idiomorph.min.js"
@@ -31,6 +33,7 @@
     <script type="module" src="{{ base_path }}/static/js/card-promotion.js"></script>
     <script type="module" src="{{ base_path }}/static/js/value-animator.js"></script>
     <script type="module" src="{{ base_path }}/static/js/freshness-monitor.js"></script>
+    <script type="module" src="{{ base_path }}/static/js/reduced-motion-detect.js"></script>
 </head>
 <body hx-ext="morph">
     <a href="#main-content" class="skip-link" data-testid="skip-link">Skip to main content</a>

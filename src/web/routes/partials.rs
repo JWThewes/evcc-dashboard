@@ -7,6 +7,7 @@ use crate::model::{EnergyTotals, LoadpointState, SiteState};
 use crate::web::state::{
     AppState, FlowDirection, SchematicNodeState, SchematicRenderContext,
     compute_intensity, flow_direction, node_visible,
+    derive_schematic_aria_label, derive_status_announcement,
 };
 
 // ---------- Legacy partial endpoints (backward-compatible) ----------
@@ -219,7 +220,27 @@ pub async fn schematic(State(state): State<AppState>) -> Html<String> {
         },
     ];
 
-    let tmpl = SchematicRenderContext { nodes, stale };
+    // Compute dynamic ARIA label for schematic SVG
+    let aria_label = derive_schematic_aria_label(&nodes);
+
+    // Compute status announcement with deduplication
+    let status_announcement = {
+        let previous = state
+            .last_announcement
+            .read()
+            .map(|s| s.clone())
+            .unwrap_or_default();
+        let announcement = derive_status_announcement(&nodes, stale, &previous);
+        // Update previous announcement state if changed
+        if let Some(ref text) = announcement {
+            if let Ok(mut prev) = state.last_announcement.write() {
+                *prev = text.clone();
+            }
+        }
+        announcement
+    };
+
+    let tmpl = SchematicRenderContext { nodes, stale, aria_label, status_announcement };
     Html(tmpl.render().unwrap_or_else(|e| format!("Template error: {e}")))
 }
 

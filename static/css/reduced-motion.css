@@ -1,0 +1,95 @@
+/* ==========================================================================
+   Reduced Motion Overrides
+   File: static/css/reduced-motion.css
+   Depends on: contract-animation-class-convention BEM classes
+   Position: LAST in cascade per contract-css-token-cascade
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  /* --- SVG Flow Path Animations --- */
+
+  /* Suppress stroke-dashoffset particle flow animation */
+  .flow-path--animated {
+    animation: none !important;
+    transition: opacity 500ms ease-out !important;
+  }
+
+  /* Show static arrow markers as reduced-motion alternative */
+  .flow-path__arrow-group {
+    display: block !important;
+    opacity: 1 !important;
+  }
+
+  /* Hide animated particle groups */
+  .flow-path__particle-group {
+    display: none !important;
+  }
+
+  /* --- Node Pulse Animations --- */
+
+  .node--pulsing {
+    animation: none !important;
+  }
+
+  /* --- Card Hover Interactions --- */
+
+  .card--hoverable {
+    transition-duration: 100ms !important;
+  }
+
+  /* Card expand/collapse transitions shortened */
+  .card__content {
+    transition-duration: 100ms !important;
+  }
+
+  .card__detail {
+    transition-duration: 100ms !important;
+  }
+
+  /* --- Page View Transitions --- */
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0s !important;
+  }
+
+  /* --- Skeleton/Loading Animations --- */
+
+  .skeleton--loading {
+    animation: none !important;
+    opacity: 0.6 !important;
+  }
+
+  /* --- Stale Data Pulse --- */
+
+  .freshness--stale {
+    animation: none !important;
+    border-color: var(--evcc-color-warning) !important;
+  }
+
+  /* --- Schematic Node Glow --- */
+
+  .schematic__node-circle {
+    animation: none !important;
+  }
+
+  /* --- RETAINED: Value number transitions are informational, not decorative --- */
+  /* .value--animating is intentionally NOT overridden */
+}
+
+/* ==========================================================================
+   Screen-Reader Only Utility (accessibility helper)
+   ========================================================================== */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

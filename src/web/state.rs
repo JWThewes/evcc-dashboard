@@ -7,6 +7,10 @@ use std::sync::Arc;
 
 pub type SharedPeakCache = Arc<std::sync::RwLock<PeakCache>>;
 
+/// Previous ARIA announcement text for deduplication.
+/// Only announces when state changes between poll cycles.
+pub type SharedAnnouncementState = Arc<std::sync::RwLock<String>>;
+
 /// Cached 7-day peak absolute power values per energy path.
 /// Updated every 5 minutes by the peak updater background task.
 #[derive(Debug, Clone, Default)]
@@ -97,6 +101,10 @@ pub struct SchematicRenderContext {
     pub nodes: Vec<SchematicNodeState>,
     /// Whether the overall state is stale (no recent MQTT data)
     pub stale: bool,
+    /// Dynamic aria-label describing current energy flow state
+    pub aria_label: String,
+    /// Status announcement text (Some only when state changed from previous poll)
+    pub status_announcement: Option<String>,
 }
 
 /// Compute animation intensity from current watts and 7-day peak.
@@ -159,4 +167,108 @@ pub struct AppState {
     pub db_pool: Pool<SqliteConnectionManager>,
     pub current_state: SharedState,
     pub peak_cache: SharedPeakCache,
+    pub last_announcement: SharedAnnouncementState,
+}
+
+/// Derive a human-readable aria-label for the schematic SVG element.
+/// Summarises current energy flow state for screen readers.
+pub fn derive_schematic_aria_label(nodes: &[SchematicNodeState]) -> String {
+    let mut parts = Vec::new();
+
+    for node in nodes {
+        if node.id == "house" {
+            continue;
+        }
+        if !node.visible {
+            continue;
+        }
+        if let Some(watts) = node.current_watts {
+            let w = watts.abs();
+            let kw = w / 1000.0;
+            let value_str = if kw >= 1.0 {
+                format!("{:.1} kW", kw)
+            } else {
+                format!("{:.0} W", w)
+            };
+            let desc = match (node.id, &node.direction) {
+                ("solar", _) => format!("solar producing {}", value_str),
+                ("grid", FlowDirection::ToHouse) => format!("importing {} from grid", value_str),
+                ("grid", FlowDirection::FromHouse) => format!("exporting {} to grid", value_str),
+                ("grid", FlowDirection::Idle) => "grid idle".to_string(),
+                ("battery", FlowDirection::ToHouse) => format!("battery discharging {}", value_str),
+                ("battery", FlowDirection::FromHouse) => format!("battery charging {}", value_str),
+                ("battery", FlowDirection::Idle) => "battery idle".to_string(),
+                ("ev", _) => format!("EV charging {}", value_str),
+                _ => continue,
+            };
+            parts.push(desc);
+        }
+    }
+
+    if parts.is_empty() {
+        "Energy flow: no active sources".to_string()
+    } else {
+        format!("Energy flow: {}", parts.join(", "))
+    }
+}
+
+/// Derive status announcement text from the current energy state.
+/// Returns None if called with current state that matches previous announcement.
+pub fn derive_status_announcement(
+    nodes: &[SchematicNodeState],
+    stale: bool,
+    previous: &str,
+) -> Option<String> {
+    // MQTT disconnection is highest-priority announcement
+    if stale {
+        let text = "Connection lost — showing last known values".to_string();
+        if text == previous {
+            return None;
+        }
+        return Some(text);
+    }
+
+    // Derive current state description for key status changes
+    let mut announcements = Vec::new();
+
+    for node in nodes {
+        match node.id {
+            "grid" if node.visible => {
+                match node.direction {
+                    FlowDirection::ToHouse => announcements.push("importing from grid"),
+                    FlowDirection::FromHouse => announcements.push("exporting to grid"),
+                    _ => {}
+                }
+            }
+            "battery" if node.visible => {
+                match node.direction {
+                    FlowDirection::ToHouse => announcements.push("battery discharging"),
+                    FlowDirection::FromHouse => announcements.push("battery charging"),
+                    _ => {}
+                }
+            }
+            "ev" if node.visible => {
+                if node.current_watts.map_or(false, |w| w.abs() > 50.0) {
+                    announcements.push("EV charging");
+                }
+            }
+            "solar" if !node.visible => {
+                announcements.push("solar production stopped");
+            }
+            _ => {}
+        }
+    }
+
+    let text = if announcements.is_empty() {
+        "System idle".to_string()
+    } else {
+        announcements.join(", ").to_string()
+    };
+
+    // Only announce if changed
+    if text == previous {
+        None
+    } else {
+        Some(text)
+    }
 }

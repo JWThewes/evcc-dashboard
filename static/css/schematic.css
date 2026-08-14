@@ -206,3 +206,27 @@
     transition: none;
   }
 }
+
+/* ==========================================================================
+   Static Arrow Lines (reduced-motion fallback)
+   Hidden by default; shown via JS when prefers-reduced-motion is active
+   ========================================================================== */
+
+.schematic__arrow-line {
+  stroke: var(--evcc-color-text-secondary, #a0a0a0);
+  stroke-width: 2;
+  stroke-linecap: round;
+  fill: none;
+}
+
+.schematic__arrow-line[data-direction="import"] {
+  stroke: var(--evcc-color-import, #ef5350);
+}
+
+.schematic__arrow-line[data-direction="export"] {
+  stroke: var(--evcc-color-export, #66bb6a);
+}
+
+.schematic__arrow-line[data-visible="false"] {
+  opacity: 0;
+}
