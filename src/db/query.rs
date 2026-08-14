@@ -318,3 +318,20 @@ fn resolve_table_and_grouping(resolution: &str) -> (&'static str, i64) {
         _ => ("energy_samples", 60),
     }
 }
+
+/// Returns the earliest sample timestamp as an ISO date string (YYYY-MM-DD).
+pub fn query_earliest_timestamp(conn: &Connection) -> Option<String> {
+    let result: Option<i64> = conn
+        .query_row(
+            "SELECT MIN(timestamp) FROM energy_samples",
+            [],
+            |row| row.get(0),
+        )
+        .ok()?;
+
+    result.map(|ts| {
+        let dt = chrono::DateTime::from_timestamp(ts, 0)
+            .unwrap_or_else(|| chrono::Utc::now().into());
+        dt.format("%Y-%m-%d").to_string()
+    })
+}

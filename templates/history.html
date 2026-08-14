@@ -2,57 +2,97 @@
 
 {% block title %}History - evcc Dashboard{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{{ base_path }}/static/css/history-calendar.css">
+<link rel="stylesheet" href="{{ base_path }}/static/css/history-charts.css">
+{% endblock %}
+
 {% block content %}
 <h1>Energy History</h1>
 
-<div class="card">
-    <div class="chart-controls">
-        <label for="range-select">Time Range:</label>
-        <select id="range-select" data-testid="history-range-select" onchange="updateChartRange(this.value)">
-            <option value="24h">Last 24 Hours</option>
-            <option value="7d" selected>Last 7 Days</option>
-            <option value="30d">Last 30 Days</option>
-            <option value="90d">Last 90 Days</option>
-        </select>
-    </div>
+<div class="history-calendar" id="history-calendar"
+     data-testid="history-calendar"
+     data-initial-date="{{ today }}"
+     data-min-date="{{ min_date }}">
+  <!-- Hydrated by calendar.js -->
 </div>
 
-<div class="grid grid-1">
-    <div class="card">
-        <h2>Power Overview</h2>
-        <div class="chart-box"
-             data-chart-type="power"
-             data-chart-url="{{ base_path }}/api/chart/power"
-             data-range="7d"
-             style="width:100%;height:400px;">
-        </div>
-    </div>
+<div class="history-chart" data-testid="history-chart-power">
+  <div class="history-chart__toolbar" data-testid="chart-toolbar">
+    <!-- Populated by history-charts.js and history-comparison.js -->
+  </div>
+  <div class="history-chart__loading" data-testid="chart-loading" hidden>
+    <div class="spinner" aria-label="Loading chart data"></div>
+  </div>
+  <div class="history-chart__empty" data-testid="chart-empty" hidden>
+    <p>No data for this period</p>
+  </div>
+  <div class="history-chart__container"
+       data-chart-type="power"
+       data-chart-url="{{ base_path }}/api/chart/power"
+       data-testid="chart-container-power"
+       style="width:100%;height:400px;">
+  </div>
 </div>
 
-<div class="grid grid-2">
-    <div class="card">
-        <h2>Battery</h2>
-        <div class="chart-box"
-             data-chart-type="battery"
-             data-chart-url="{{ base_path }}/api/chart/battery"
-             data-range="7d"
-             style="width:100%;height:350px;">
-        </div>
+<div class="grid-2">
+  <div class="history-chart" data-testid="history-chart-battery">
+    <h2>Battery</h2>
+    <div class="history-chart__container"
+         data-chart-type="battery"
+         data-chart-url="{{ base_path }}/api/chart/battery"
+         data-testid="chart-container-battery"
+         style="width:100%;height:350px;">
     </div>
+  </div>
 
-    <div class="card">
-        <h2>Daily Energy</h2>
-        <div class="chart-box"
-             data-chart-type="energy"
-             data-chart-url="{{ base_path }}/api/chart/energy"
-             data-range="30d"
-             style="width:100%;height:350px;">
-        </div>
+  <div class="history-chart" data-testid="history-chart-energy">
+    <h2>Daily Energy</h2>
+    <div class="history-chart__container"
+         data-chart-type="energy"
+         data-chart-url="{{ base_path }}/api/chart/energy"
+         data-testid="chart-container-energy"
+         style="width:100%;height:350px;">
     </div>
+  </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
-<script src="{{ base_path }}/static/js/echarts.min.js" defer></script>
-<script src="{{ base_path }}/static/js/charts.js" defer></script>
+<script src="{{ base_path }}/static/js/echarts.min.js"></script>
+<script type="module">
+  import { init as initCalendar } from '{{ base_path }}/static/js/calendar.js';
+  import { init as initCharts, loadData, enableComparison, enableMultiMetric, disableComparison, onResize, dispose } from '{{ base_path }}/static/js/history-charts.js';
+  import { initComparison } from '{{ base_path }}/static/js/history-comparison.js';
+
+  const calendarEl = document.getElementById('history-calendar');
+  const containers = {
+    power: document.querySelector('[data-chart-type="power"]'),
+    battery: document.querySelector('[data-chart-type="battery"]'),
+    energy: document.querySelector('[data-chart-type="energy"]'),
+  };
+
+  const calendar = initCalendar(calendarEl, {
+    initialDate: calendarEl.dataset.initialDate,
+    minDate: calendarEl.dataset.minDate,
+    presets: ['today', 'yesterday', '7d', '30d'],
+  });
+
+  initCharts(containers);
+
+  const toolbar = document.querySelector('[data-testid="chart-toolbar"]');
+  initComparison(toolbar, { enableComparison, enableMultiMetric, disableComparison });
+
+  // Wire calendar date-change event to chart loading
+  calendarEl.addEventListener('date-change', (e) => {
+    loadData(e.detail, null);
+  });
+
+  // Initial load with 7-day range
+  calendar.selectRange('7d');
+
+  // Responsive resize
+  window.addEventListener('resize', onResize);
+  window.addEventListener('pagehide', dispose);
+</script>
 {% endblock %}
