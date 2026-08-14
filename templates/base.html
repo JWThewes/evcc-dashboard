@@ -3,37 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="view-transition" content="same-origin">
     <title>{% block title %}evcc Dashboard{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
-    <!-- Design system (load before app.css for correct cascade) -->
+    <!-- Design system cascade: tokens → animations → layout → app -->
     <link rel="stylesheet" href="{{ base_path }}/static/css/tokens.css">
     <link rel="stylesheet" href="{{ base_path }}/static/css/animations.css">
-    <!-- Application styles -->
+    <link rel="stylesheet" href="{{ base_path }}/static/css/layout.css">
     <link rel="stylesheet" href="{{ base_path }}/static/css/app.css">
-    <!-- Runtime: htmx -> idiomorph -> echarts -> app JS -->
+    <!-- Runtime: htmx → idiomorph -->
     <script src="{{ base_path }}/static/js/htmx.min.js" defer></script>
     <script src="{{ base_path }}/static/js/idiomorph.min.js"
             defer
             integrity="sha384-01awMgY2Qxoo57dFZwehcB4wqi9TunC6fiF9hpPaDsLu+ayOG+WvoatvgPWquZh8"
             crossorigin="anonymous"></script>
-    <script src="{{ base_path }}/static/js/echarts.min.js" defer></script>
-    <script src="{{ base_path }}/static/js/charts.js" defer></script>
+    {% block extra_head %}{% endblock %}
+    <!-- ES modules for progressive enhancement -->
+    <script type="module" src="{{ base_path }}/static/js/transitions.js"></script>
+    <script type="module" src="{{ base_path }}/static/js/hamburger-nav.js"></script>
 </head>
 <body hx-ext="morph">
-    <nav class="navbar">
-        <div class="navbar-brand">
+    <a href="#main-content" class="skip-link" data-testid="skip-link">Skip to main content</a>
+    <nav class="navbar" aria-label="Main navigation">
+        <div class="navbar__brand">
             <a href="{{ base_path }}/">evcc Dashboard</a>
         </div>
-        <div class="navbar-links">
-            <a href="{{ base_path }}/" class="nav-link">Dashboard</a>
-            <a href="{{ base_path }}/history" class="nav-link">History</a>
-            <a href="{{ base_path }}/settings" class="nav-link">Settings</a>
+        <div class="navbar__links">
+            <a href="{{ base_path }}/" class="navbar__link" data-testid="nav-dashboard">Dashboard</a>
+            <a href="{{ base_path }}/history" class="navbar__link" data-testid="nav-history">History</a>
+            <a href="{{ base_path }}/settings" class="navbar__link" data-testid="nav-settings">Settings</a>
         </div>
+        <button class="navbar__hamburger"
+                aria-expanded="false"
+                aria-controls="nav-drawer"
+                aria-label="Open navigation menu"
+                data-testid="hamburger-button">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <line x1="3" y1="12" x2="21" y2="12"/>
+                <line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+        </button>
     </nav>
-    <main class="container">
+    <aside id="nav-drawer"
+           class="nav-drawer"
+           aria-hidden="true"
+           aria-label="Mobile navigation"
+           data-testid="nav-drawer">
+        <a href="{{ base_path }}/" class="nav-drawer__link" data-testid="drawer-dashboard">Dashboard</a>
+        <a href="{{ base_path }}/history" class="nav-drawer__link" data-testid="drawer-history">History</a>
+        <a href="{{ base_path }}/settings" class="nav-drawer__link" data-testid="drawer-settings">Settings</a>
+    </aside>
+    <div class="nav-drawer__overlay" data-testid="drawer-overlay"></div>
+    <main id="main-content" class="container">
         {% block content %}{% endblock %}
     </main>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

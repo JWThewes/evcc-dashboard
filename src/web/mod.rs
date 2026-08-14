@@ -30,11 +30,17 @@ pub fn build_router(state: AppState) -> Router {
         .route("/", get(routes::dashboard::index))
         .route("/history", get(routes::dashboard::history))
         .route("/settings", get(routes::settings::index))
+        // New three-zone partial endpoints
+        .route("/partials/schematic", get(routes::partials::schematic))
+        .route("/partials/cards", get(routes::partials::cards))
+        .route("/partials/summary-new", get(routes::partials::summary_new))
+        // Legacy partial endpoints (backward-compatible)
         .route("/partials/energy-flow", get(routes::partials::energy_flow))
         .route("/partials/loadpoints", get(routes::partials::loadpoints))
         .route("/partials/battery", get(routes::partials::battery_status))
         .route("/partials/summary", get(routes::partials::summary_stats))
         .route("/partials/today-energy", get(routes::partials::today_energy))
+        // Chart API
         .route("/api/chart/power", get(routes::charts::power_history))
         .route("/api/chart/energy", get(routes::charts::energy_daily))
         .route("/api/chart/battery", get(routes::charts::battery_history))

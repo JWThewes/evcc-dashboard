@@ -1,0 +1,25 @@
+<div class="schematic-placeholder" id="schematic-content" data-testid="schematic-zone">
+    <h2 class="schematic-placeholder__title">Energy Flow</h2>
+    <div class="schematic-placeholder__grid">
+        <div class="schematic-placeholder__item" data-testid="schematic-pv">
+            <span class="schematic-placeholder__label">Solar</span>
+            <span class="schematic-placeholder__value production">{{ site.pv_power_display() }} W</span>
+        </div>
+        <div class="schematic-placeholder__item" data-testid="schematic-grid">
+            <span class="schematic-placeholder__label">Grid</span>
+            <span class="schematic-placeholder__value {{ site.grid_css_class() }}">{{ site.grid_direction() }}</span>
+        </div>
+        <div class="schematic-placeholder__item" data-testid="schematic-home">
+            <span class="schematic-placeholder__label">Home</span>
+            <span class="schematic-placeholder__value consumption">{{ site.home_power_display() }} W</span>
+        </div>
+        {% match site.battery_power %}
+            {% when Some with (_val) %}
+        <div class="schematic-placeholder__item" data-testid="schematic-battery">
+            <span class="schematic-placeholder__label">Battery</span>
+            <span class="schematic-placeholder__value {{ site.battery_css_class() }}">{{ site.battery_power_display() }} W ({{ site.battery_soc_display() }}%)</span>
+        </div>
+            {% when None %}
+        {% endmatch %}
+    </div>
+</div>
